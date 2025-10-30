@@ -3,7 +3,7 @@ const ExpenseSchema = require("../models/ExpenseModel");
 exports.addExpense = async (req, res) => {
   const { title, amount, category, description, date } = req.body;
 
-  const income = ExpenseSchema({
+  const expense = ExpenseSchema({
     title,
     amount,
     category,
@@ -14,26 +14,26 @@ exports.addExpense = async (req, res) => {
   try {
     //validations
     if (!title || !category || !description || !date) {
-      return res.status(400).json({ message: "All fields are required!" });
+      return res.status(400).json({ message: "Vui lòng điền vào tất cả ô trống!" });
     }
-    if (amount <= 0 || !amount === "number") {
+    if (amount <= 0 || typeof amount !== "number") {
       return res
         .status(400)
-        .json({ message: "Amount must be a positive number!" });
+        .json({ message: "Số tiền phải là một số lớn hơn 0!" });
     }
-    await income.save();
-    res.status(200).json({ message: "Expense Added" });
+    await expense.save();
+    res.status(200).json({ message: "Thêm khoản chi thành công" });
   } catch (error) {
     res.status(500).json({ message: "Server Error" });
   }
 
-  console.log(income);
+  console.log(expense);
 };
 
 exports.getExpense = async (req, res) => {
   try {
-    const incomes = await ExpenseSchema.find().sort({ createdAt: -1 });
-    res.status(200).json(incomes);
+    const expenses = await ExpenseSchema.find().sort({ createdAt: -1 });
+    res.status(200).json(expenses);
   } catch (error) {
     res.status(500).json({ message: "Server Error" });
   }
@@ -41,11 +41,10 @@ exports.getExpense = async (req, res) => {
 
 exports.deleteExpense = async (req, res) => {
   const { id } = req.params;
-  ExpenseSchema.findByIdAndDelete(id)
-    .then((income) => {
-      res.status(200).json({ message: "Expense Deleted" });
-    })
-    .catch((err) => {
-      res.status(500).json({ message: "Server Error" });
-    });
+  try {
+    await ExpenseSchema.findByIdAndDelete(id);
+    res.status(200).json({ message: "Đã xóa chi phí thành công" });
+  } catch (err) {
+    res.status(500).json({ message: "Server Error" });
+  }
 };
