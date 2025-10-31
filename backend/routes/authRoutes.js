@@ -1,6 +1,7 @@
 const express = require("express");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
+const passport = require("passport");
 const User = require("../models/User");
 
 const router = express.Router();
@@ -51,5 +52,38 @@ router.post("/login", async (req, res) => {
     res.status(500).json({ error: err.message });
   }
 });
+// login bằng gg
+router.get(
+  "/google",
+  passport.authenticate("google", { scope: ["profile", "email"] })
+);
+
+router.get(
+  "/google/callback",
+  passport.authenticate("google", { failureRedirect: "/" }),
+  (req, res) => {
+    res.json({
+      message: "Đăng nhập Google thành công",
+      user: req.user,
+    });
+  }
+);
+
+//login bằng fb
+router.get(
+  "/facebook",
+  passport.authenticate("facebook", { scope: ["email"] })
+);
+
+router.get(
+  "/facebook/callback",
+  passport.authenticate("facebook", { failureRedirect: "/" }),
+  (req, res) => {
+    res.json({
+      message: "Đăng nhập Facebook thành công",
+      user: req.user,
+    });
+  }
+);
 
 module.exports = router;
