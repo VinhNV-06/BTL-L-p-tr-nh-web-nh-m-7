@@ -3,10 +3,14 @@ const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const passport = require("passport");
 const User = require("../models/User");
+const BlacklistToken = require("../models/BlacklistToken");
 
 const router = express.Router();
 
-// ĐĂNG KÝ
+const FRONTEND_URL = "http://localhost:3000";
+const REDIRECT_PAGE = "/auth/callback";
+
+// ĐĂNG KÝ 
 router.post("/register", async (req, res) => {
   try {
     const { name, email, password } = req.body;
@@ -26,7 +30,7 @@ router.post("/register", async (req, res) => {
   }
 });
 
-// ĐĂNG NHẬP
+// ĐĂNG NHẬP 
 router.post("/login", async (req, res) => {
   try {
     const { email, password } = req.body;
@@ -52,24 +56,52 @@ router.post("/login", async (req, res) => {
     res.status(500).json({ error: err.message });
   }
 });
-// login bằng gg
+
+// đăng xuất
+router.post("/logout", async (req, res) => {
+  try {
+    const token = req.header("Authorization")?.replace("Bearer ", "");
+    if (token) {
+      try {
+        const decoded = jwt.decode(token);
+        if (decoded && decoded.exp) {
+          await BlacklistToken.create({
+            token,
+            expiresAt: new Date(decoded.exp * 1000),
+          });
+        }
+      } catch (e) {
+        console.error("Lỗi khi blacklist token:", e.message);
+      }
+    }
+
+
+    return res.json({ message: "Đăng xuất thành công" });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
 router.get(
   "/google",
   passport.authenticate("google", { scope: ["profile", "email"] })
 );
 
+
 router.get(
   "/google/callback",
-  passport.authenticate("google", { failureRedirect: "/" }),
+
+  passport.authenticate("google", { failureRedirect: "/", session: false }),
   (req, res) => {
-    res.json({
-      message: "Đăng nhập Google thành công",
-      user: req.user,
+
+    const token = jwt.sign({ id: req.user._id }, process.env.JWT_SECRET, {
+      expiresIn: "7d",
     });
+
+    res.redirect(`${FRONTEND_URL}${REDIRECT_PAGE}?token=${token}`);
   }
 );
 
-//login bằng fb
 router.get(
   "/facebook",
   passport.authenticate("facebook", { scope: ["email"] })
@@ -77,12 +109,16 @@ router.get(
 
 router.get(
   "/facebook/callback",
-  passport.authenticate("facebook", { failureRedirect: "/" }),
+
+  passport.authenticate("facebook", { failureRedirect: "/", session: false }),
   (req, res) => {
-    res.json({
-      message: "Đăng nhập Facebook thành công",
-      user: req.user,
+
+    const token = jwt.sign({ id: req.user._id }, process.env.JWT_SECRET, {
+      expiresIn: "7d",
     });
+
+
+    res.redirect(`${FRONTEND_URL}${REDIRECT_PAGE}?token=${token}`);
   }
 );
 
