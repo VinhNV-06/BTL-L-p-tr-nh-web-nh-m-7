@@ -1,13 +1,19 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 
 const API_URL = "http://localhost:5000/api/v1";
 
 const AuthPage: React.FC = () => {
   const [isSignUp, setIsSignUp] = useState(false);
   const [loading, setLoading] = useState(false);
-  const [errors, setErrors] = useState<{ [key: string]: string }>({}); 
+  const [errors, setErrors] = useState<{ [key: string]: string }>({});
+  const navigate = useNavigate();
 
-  // State đăng ký
+  useEffect(() => {
+    const token = localStorage.getItem("token");
+    if (token) navigate("/");
+  }, [navigate]);
+
   const [registerData, setRegisterData] = useState({
     name: "",
     email: "",
@@ -15,7 +21,6 @@ const AuthPage: React.FC = () => {
     confirmPassword: "",
   });
 
-  // State đăng nhập
   const [loginData, setLoginData] = useState({
     email: "",
     password: "",
@@ -61,10 +66,10 @@ const AuthPage: React.FC = () => {
       const data = await res.json();
 
       if (res.ok) {
+        alert("🎉 Đăng ký thành công!");
         setIsSignUp(false);
         setRegisterData({ name: "", email: "", password: "", confirmPassword: "" });
         setErrors({});
-        alert("🎉 Đăng ký thành công!");
       } else {
         setErrors({ email: data.message || "Đăng ký thất bại" });
       }
@@ -96,7 +101,7 @@ const AuthPage: React.FC = () => {
         localStorage.setItem("token", data.token);
         localStorage.setItem("user", JSON.stringify(data.user));
         alert("🎉 Đăng nhập thành công!");
-        window.location.href = "/";
+        navigate("/"); 
       } else {
         setErrors({ global: data.message || "Sai email hoặc mật khẩu" });
       }
