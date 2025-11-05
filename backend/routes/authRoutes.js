@@ -4,22 +4,21 @@ const jwt = require("jsonwebtoken");
 const passport = require("passport");
 const User = require("../models/User");
 const BlacklistToken = require("../models/BlacklistToken");
+const authMiddleware = require("../middleware/authMiddleware"); 
 
 const router = express.Router();
 
-const FRONTEND_URL = "http://localhost:3000";
+const FRONTEND_URL = "http://localhost:5173";
 const REDIRECT_PAGE = "/auth/callback";
 
-// ĐĂNG KÝ 
+// ĐĂNG KÝ
 router.post("/register", async (req, res) => {
   try {
     const { name, email, password } = req.body;
 
-    // Kiểm tra tồn tại
     const existing = await User.findOne({ email });
     if (existing) return res.status(400).json({ message: "Email đã tồn tại" });
 
-    // Mã hóa mật khẩu
     const hashed = await bcrypt.hash(password, 10);
     const newUser = new User({ name, email, password: hashed });
     await newUser.save();
@@ -30,7 +29,7 @@ router.post("/register", async (req, res) => {
   }
 });
 
-// ĐĂNG NHẬP 
+// ĐĂNG NHẬP
 router.post("/login", async (req, res) => {
   try {
     const { email, password } = req.body;
@@ -42,7 +41,6 @@ router.post("/login", async (req, res) => {
     const valid = await bcrypt.compare(password, user.password);
     if (!valid) return res.status(400).json({ message: "Sai mật khẩu" });
 
-    // Tạo token
     const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, {
       expiresIn: "7d",
     });
@@ -57,7 +55,7 @@ router.post("/login", async (req, res) => {
   }
 });
 
-// đăng xuất
+// Đăng xuất
 router.post("/logout", async (req, res) => {
   try {
     const token = req.header("Authorization")?.replace("Bearer ", "");
@@ -75,25 +73,35 @@ router.post("/logout", async (req, res) => {
       }
     }
 
-
     return res.json({ message: "Đăng xuất thành công" });
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
 });
 
+// Lấy thông tin user
+router.get("/me", authMiddleware, async (req, res) => {
+  try {
+    const user = await User.findById(req.userId).select("-password");
+    if (!user) return res.status(404).json({ message: "Không tìm thấy user" });
+
+    res.json(user);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: "Lỗi server" });
+  }
+});
+
+// GOOGLE OAUTH
 router.get(
   "/google",
   passport.authenticate("google", { scope: ["profile", "email"] })
 );
 
-
 router.get(
   "/google/callback",
-
   passport.authenticate("google", { failureRedirect: "/", session: false }),
   (req, res) => {
-
     const token = jwt.sign({ id: req.user._id }, process.env.JWT_SECRET, {
       expiresIn: "7d",
     });
@@ -102,21 +110,16 @@ router.get(
   }
 );
 
-router.get(
-  "/facebook",
-  passport.authenticate("facebook")
-);
+// FACEBOOK OAUTH
+router.get("/facebook", passport.authenticate("facebook"));
 
 router.get(
   "/facebook/callback",
-
   passport.authenticate("facebook", { failureRedirect: "/", session: false }),
   (req, res) => {
-
     const token = jwt.sign({ id: req.user._id }, process.env.JWT_SECRET, {
       expiresIn: "7d",
     });
-
 
     res.redirect(`${FRONTEND_URL}${REDIRECT_PAGE}?token=${token}`);
   }

@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import "./AuthPage.css";
 
-const API_URL = "http://localhost:5000/api/v1";
+const API_URL = "http://localhost:5000/api/v1"; 
 
 const AuthPage: React.FC = () => {
   const [isSignUp, setIsSignUp] = useState(false);
@@ -11,7 +12,7 @@ const AuthPage: React.FC = () => {
 
   useEffect(() => {
     const token = localStorage.getItem("token");
-    if (token) navigate("/");
+    if (token) navigate("/home");
   }, [navigate]);
 
   const [registerData, setRegisterData] = useState({
@@ -48,7 +49,7 @@ const AuthPage: React.FC = () => {
     return newErrors;
   };
 
-  // Đăng ký
+  // ĐĂNG KÝ 
   const handleRegister = async () => {
     const newErrors = validateRegister();
     if (Object.keys(newErrors).length > 0) {
@@ -71,7 +72,7 @@ const AuthPage: React.FC = () => {
         setRegisterData({ name: "", email: "", password: "", confirmPassword: "" });
         setErrors({});
       } else {
-        setErrors({ email: data.message || "Đăng ký thất bại" });
+        setErrors({ global: data.message || "Đăng ký thất bại" });
       }
     } catch {
       setErrors({ global: "Lỗi kết nối server" });
@@ -80,7 +81,7 @@ const AuthPage: React.FC = () => {
     }
   };
 
-  // Đăng nhập
+  // ĐĂNG NHẬP
   const handleLogin = async () => {
     const newErrors = validateLogin();
     if (Object.keys(newErrors).length > 0) {
@@ -99,9 +100,9 @@ const AuthPage: React.FC = () => {
 
       if (res.ok) {
         localStorage.setItem("token", data.token);
-        localStorage.setItem("user", JSON.stringify(data.user));
+
         alert("🎉 Đăng nhập thành công!");
-        navigate("/"); 
+        navigate("/home"); 
       } else {
         setErrors({ global: data.message || "Sai email hoặc mật khẩu" });
       }
@@ -123,9 +124,7 @@ const AuthPage: React.FC = () => {
           <input
             type="email"
             value={loginData.email}
-            onChange={(e) =>
-              setLoginData({ ...loginData, email: e.target.value })
-            }
+            onChange={(e) => setLoginData({ ...loginData, email: e.target.value })}
           />
           {errors.email && <p className="error-text">{errors.email}</p>}
         </label>
@@ -134,9 +133,7 @@ const AuthPage: React.FC = () => {
           <input
             type="password"
             value={loginData.password}
-            onChange={(e) =>
-              setLoginData({ ...loginData, password: e.target.value })
-            }
+            onChange={(e) => setLoginData({ ...loginData, password: e.target.value })}
           />
           {errors.password && <p className="error-text">{errors.password}</p>}
         </label>
@@ -224,10 +221,7 @@ const AuthPage: React.FC = () => {
               type="password"
               value={registerData.confirmPassword}
               onChange={(e) =>
-                setRegisterData({
-                  ...registerData,
-                  confirmPassword: e.target.value,
-                })
+                setRegisterData({ ...registerData, confirmPassword: e.target.value })
               }
             />
             {errors.confirmPassword && (
