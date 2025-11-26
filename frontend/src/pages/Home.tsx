@@ -1,81 +1,71 @@
-import React, { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import React, { useState, useMemo } from "react";
+import styled from "styled-components";
 
-interface User {
-  _id: string;
-  name: string;
-  email: string;
-}
+import bg from "../img/bg.png";
+import { MainLayout } from "../styles/Layouts";
+
+import Orb from "../Components/Orb/Orb";
+import Navigation from "../Components/Navigation/Navigation";
+import Dashboard from "../Components/Dashboard/Dashboard";
+import Income from "../Components/Income/Income";
+import Expenses from "../Components/Expenses/Expenses";
+
+import { useGlobalContext } from "../context/useGlobalContext";
 
 const Home: React.FC = () => {
-  const [user, setUser] = useState<User | null>(null);
-  const [loading, setLoading] = useState(true);
-  const navigate = useNavigate();
+  const [active, setActive] = useState<number>(1);
 
-  // LẤY THÔNG TIN USER 
-  useEffect(() => {
-    const fetchUser = async () => {
-      const token = localStorage.getItem("token");
-      if (!token) {
-        navigate("/");
-        return;
-      }
+  const global = useGlobalContext();
+  console.log(global);
 
-      try {
-        const res = await fetch("http://localhost:5000/api/v1/me", { 
-          headers: { Authorization: `Bearer ${token}` },
-        });
-        if (res.ok) {
-          const data = await res.json();
-          setUser(data);
-        } else {
-          localStorage.removeItem("token");
-          navigate("/"); 
-        }
-      } catch (err) {
-        console.error("Lỗi khi lấy thông tin user:", err);
-        localStorage.removeItem("token");
-        navigate("/"); 
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchUser();
-  }, [navigate]);
-
-  const handleLogout = async () => {
-    const token = localStorage.getItem("token");
-    if (token) {
-      try {
-        await fetch("http://localhost:5000/api/v1/logout", { 
-          method: "POST",
-          headers: { Authorization: `Bearer ${token}` },
-        });
-      } catch (err) {
-        console.error(err);
-      }
+  // Không khai báo JSX.Element nữa
+  const displayData = () => {
+    switch (active) {
+      case 1:
+        return <Dashboard />;
+      case 2:
+        return <Dashboard />;
+      case 3:
+        return <Income />;
+      case 4:
+        return <Expenses />;
+      default:
+        return <Dashboard />;
     }
-
-    localStorage.removeItem("token");
-    navigate("/"); 
   };
 
-  if (loading) return <p>Đang tải thông tin...</p>;
+  const orbMemo = useMemo(() => <Orb />, []);
 
   return (
-    <div className="home-container">
-      <nav className="navbar">
-        <h2>Xin chào, {user?.name || "Người dùng"} 👋</h2>
-        <button onClick={handleLogout}>Đăng xuất</button>
-      </nav>
+    <HomeStyled bg={bg}>
+      {orbMemo}
 
-      <main>
-        <h3>Chào mừng bạn đến trang Home!</h3>
-        <p>Email của bạn: {user?.email}</p>
-      </main>
-    </div>
+      <MainLayout>
+        <Navigation active={active} setActive={setActive} />
+
+        <main>{displayData()}</main>
+      </MainLayout>
+    </HomeStyled>
   );
 };
 
 export default Home;
+
+const HomeStyled = styled.div<{ bg: string }>`
+  height: 100vh;
+  background-image: url(${(props) => props.bg});
+  position: relative;
+
+  main {
+    flex: 1;
+    background: rgba(252, 246, 249, 0.78);
+    border: 3px solid #ffffff;
+    backdrop-filter: blur(4.5px);
+    border-radius: 32px;
+    overflow-x: hidden;
+
+    &::-webkit-scrollbar {
+      width: 0;
+    }
+  }
+`;
