@@ -4,6 +4,7 @@ import AuthPage from "./pages/AuthPage";
 import Home from "./pages/Home";
 import OAuthCallback from "./pages/OAuthCallback";
 
+// App.tsx
 const App: React.FC = () => {
   return (
     <Routes>
@@ -13,5 +14,6 @@ const App: React.FC = () => {
     </Routes>
   );
 };
+
 
 export default App;
