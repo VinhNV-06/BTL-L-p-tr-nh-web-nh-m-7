@@ -1,49 +1,50 @@
-import React, { useEffect, FC } from 'react';
-import styled from 'styled-components';
-import { useGlobalContext } from '../../context/useGlobalContext';
-import { InnerLayout } from '../../styles/Layouts';
-import IncomeItem from '../IncomeItem/IncomeItem';
-import Form from '../Form/Form';   // 👈 form nhập thu nhập đã tách riêng
-import { Transaction } from '../../context/types';
+import React, { useEffect, FC } from "react";
+import styled from "styled-components";
+import { useGlobalContext } from "../../context/useGlobalContext";
+import { InnerLayout } from "../../styles/Layouts";
+import IncomeItem from "../IncomeItem/IncomeItem";
+import Form from "../Form/Form"; // form nhập thu nhập đã tách riêng
+import { Transaction } from "../../context/types";
 
 const Income: FC = () => {
-  const {
-    incomes,
-    getIncomes,
-    deleteIncome,
-    totalIncome,
-  } = useGlobalContext() as {
-    incomes: Transaction[];
-    getIncomes: () => Promise<void>;
-    deleteIncome: (id: string) => Promise<void>;
-    totalIncome: () => number;
-  };
+  const { incomes, getIncomes, deleteIncome, formattedTotalIncome } =
+    useGlobalContext() as {
+      incomes: Transaction[];
+      getIncomes: () => Promise<void>;
+      deleteIncome: (id: string) => Promise<void>;
+      formattedTotalIncome: string; // tổng thu nhập rút gọn
+    };
 
   useEffect(() => {
     getIncomes();
-  }, []);
+  }, [getIncomes]);
 
   return (
     <IncomeStyled>
       <InnerLayout>
         <h1>Incomes</h1>
+
+        {/* Tổng thu nhập rút gọn */}
         <h2 className="total-income">
-          Total Income: <span>${totalIncome()}</span>
+          Total Income: <span>${formattedTotalIncome}</span>
         </h2>
+
         <div className="income-content">
           <div className="form-container">
-            <Form /> {/* 👈 form nhập thu nhập */}
+            <Form /> {/* form nhập thu nhập */}
           </div>
+
           <div className="incomes">
             {incomes.map((income) => {
               const {
-                _id = '',
-                title = '',
+                _id = "",
+                title = "",
                 amount = 0,
-                date = '',
-                category = '',
-                description = '',
-                type = 'income',
+                date = "",
+                category = "",
+                description = "",
+                type = "income",
+                formattedAmount = "",
               } = income;
 
               return (
@@ -52,7 +53,9 @@ const Income: FC = () => {
                   id={_id}
                   title={title}
                   description={description}
-                  amount={amount}
+                  // nếu có formattedAmount thì hiển thị, fallback về số gốc
+                  amount={formattedAmount || amount}
+                  originalAmount={amount} // optional: tooltip hoặc hiển thị số gốc
                   date={date}
                   type={type}
                   category={category}
