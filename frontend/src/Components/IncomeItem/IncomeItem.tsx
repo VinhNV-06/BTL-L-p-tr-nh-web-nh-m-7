@@ -114,8 +114,8 @@ const IncomeItem: FC<IncomeItemProps> = ({
               bRad="50%"
               bg="var(--primary-color)"
               color="#fff"
-              iColor="#fff"              // 👈 icon màu trắng
-              hColor="var(--color-green)" // 👈 hover đổi sang xanh
+              iColor="#fff"             
+              hColor="var(--color-green)" 
               onClick={() => deleteItem(id)}
             />
           </div>

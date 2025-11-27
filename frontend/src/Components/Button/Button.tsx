@@ -10,8 +10,8 @@ interface ButtonProps {
   bPad?: string;
   color?: string;
   bRad?: string;
-  iColor?: string;   // 👈 thêm lại để chỉnh màu icon riêng
-  hColor?: string;   // 👈 thêm lại để chỉnh màu hover
+  iColor?: string; 
+  hColor?: string;   
 }
 
 const Button: React.FC<ButtonProps> = ({

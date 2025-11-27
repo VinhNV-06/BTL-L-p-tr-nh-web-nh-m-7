@@ -9,6 +9,7 @@ import Navigation from "../Components/Navigation/Navigation";
 import Dashboard from "../Components/Dashboard/Dashboard";
 import Income from "../Components/Income/Income";
 import Expenses from "../Components/Expenses/Expenses";
+import CategoryManager from "./CategoryManager";
 
 import { useGlobalContext } from "../context/useGlobalContext";
 
@@ -18,7 +19,7 @@ const Home: React.FC = () => {
   const global = useGlobalContext();
   console.log(global);
 
-  // Không khai báo JSX.Element nữa
+  // Hiển thị component theo menu đang chọn
   const displayData = () => {
     switch (active) {
       case 1:
@@ -29,6 +30,8 @@ const Home: React.FC = () => {
         return <Income />;
       case 4:
         return <Expenses />;
+      case 5:
+        return <CategoryManager />; 
       default:
         return <Dashboard />;
     }
@@ -42,7 +45,6 @@ const Home: React.FC = () => {
 
       <MainLayout>
         <Navigation active={active} setActive={setActive} />
-
         <main>{displayData()}</main>
       </MainLayout>
     </HomeStyled>
