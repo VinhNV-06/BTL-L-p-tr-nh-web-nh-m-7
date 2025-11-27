@@ -5,6 +5,7 @@ const {
   getExpense,
   updateExpense,
   deleteExpense,
+  getTotalExpense,
 } = require("../controllers/expense");
 
 const {
@@ -24,5 +25,7 @@ router
   .get("/get-expenses", getExpense)
   .put("/update-expense/:id", updateExpense)  
   .delete("/delete-expense/:id", deleteExpense);
+router.get("/total-expense", getTotalExpense);
+
 
 module.exports = router;
