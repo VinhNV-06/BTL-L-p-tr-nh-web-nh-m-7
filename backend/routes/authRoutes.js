@@ -42,7 +42,7 @@ router.post("/login", async (req, res) => {
     if (!valid) return res.status(400).json({ message: "Sai mật khẩu" });
 
     const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, {
-      expiresIn: "7d",
+      expiresIn: "5s",
     });
 
     res.json({
@@ -103,7 +103,7 @@ router.get(
   passport.authenticate("google", { failureRedirect: "/", session: false }),
   (req, res) => {
     const token = jwt.sign({ id: req.user._id }, process.env.JWT_SECRET, {
-      expiresIn: "7d",
+      expiresIn: "5s",
     });
 
     res.redirect(`${FRONTEND_URL}${REDIRECT_PAGE}?token=${token}`);
@@ -118,7 +118,7 @@ router.get(
   passport.authenticate("facebook", { failureRedirect: "/", session: false }),
   (req, res) => {
     const token = jwt.sign({ id: req.user._id }, process.env.JWT_SECRET, {
-      expiresIn: "7d",
+      expiresIn: "5s",
     });
 
     res.redirect(`${FRONTEND_URL}${REDIRECT_PAGE}?token=${token}`);

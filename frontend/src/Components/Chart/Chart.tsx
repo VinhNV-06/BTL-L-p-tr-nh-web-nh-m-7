@@ -27,8 +27,9 @@ ChartJs.register(
   ArcElement
 );
 
+// interface linh hoạt hơn: date có thể là string hoặc Date
 interface Transaction {
-  date: string;
+  date: string | Date;
   amount: number;
 }
 
@@ -64,8 +65,8 @@ const Chart: FC = () => {
 };
 
 const ChartStyled = styled.div`
-  background: #fcf6f9;
-  border: 2px solid #ffffff;
+  background: #FCF6F9;   /* giữ nguyên như bản JS */
+  border: 2px solid #FFFFFF;
   box-shadow: 0px 1px 15px rgba(0, 0, 0, 0.06);
   padding: 1rem;
   border-radius: 20px;

@@ -24,7 +24,6 @@ import {
 } from '../../utils/Icons';
 import Button from '../Button/Button';
 
-// 👇 định nghĩa kiểu cho props
 interface IncomeItemProps {
   id: string;
   title: string;
@@ -103,28 +102,21 @@ const IncomeItem: FC<IncomeItemProps> = ({
         <h5>{title}</h5>
         <div className="inner-content">
           <div className="text">
-            <p>
-              {dollar} {amount}
-            </p>
-            <p>
-              {calender} {dateFormat(date)}
-            </p>
-            <p>
-              {comment}
-              {description}
-            </p>
+            <p>{dollar} {amount}</p>
+            <p>{calender} {dateFormat(date)}</p>
+            <p>{comment} {description}</p>
           </div>
           <div className="btn-con">
             <Button
-                name='Thêm'
-                icon={trash}
-                bPad="1rem"
-                bRad="50%"
-                bg="var(--primary-color)"
-                color="#fff"
-                iColor="#fff"
-                hColor="var(--color-green)"
-                onClick={() => deleteItem(id)}
+              name="Xóa"
+              icon={trash}
+              bPad="1rem"
+              bRad="50%"
+              bg="var(--primary-color)"
+              color="#fff"
+              iColor="#fff"              // 👈 icon màu trắng
+              hColor="var(--color-green)" // 👈 hover đổi sang xanh
+              onClick={() => deleteItem(id)}
             />
           </div>
         </div>
@@ -133,10 +125,9 @@ const IncomeItem: FC<IncomeItemProps> = ({
   );
 };
 
-// 👇 styled-component với prop indicator
 const IncomeItemStyled = styled.div<{ indicator: string }>`
-  background: #fcf6f9;
-  border: 2px solid #ffffff;
+  background: #FCF6F9;
+  border: 2px solid #FFFFFF;
   box-shadow: 0px 1px 15px rgba(0, 0, 0, 0.06);
   border-radius: 20px;
   padding: 1rem;
@@ -151,11 +142,11 @@ const IncomeItemStyled = styled.div<{ indicator: string }>`
     width: 80px;
     height: 80px;
     border-radius: 20px;
-    background: #f5f5f5;
+    background: #F5F5F5;
     display: flex;
     align-items: center;
     justify-content: center;
-    border: 2px solid #ffffff;
+    border: 2px solid #FFFFFF;
     i {
       font-size: 2.6rem;
     }
@@ -165,7 +156,7 @@ const IncomeItemStyled = styled.div<{ indicator: string }>`
     flex: 1;
     display: flex;
     flex-direction: column;
-    gap: 0.2rem;
+    gap: .2rem;
     h5 {
       font-size: 1.3rem;
       padding-left: 2rem;
@@ -176,8 +167,8 @@ const IncomeItemStyled = styled.div<{ indicator: string }>`
         left: 0;
         top: 50%;
         transform: translateY(-50%);
-        width: 0.8rem;
-        height: 0.8rem;
+        width: .8rem;
+        height: .8rem;
         border-radius: 50%;
         background: ${(props) => props.indicator};
       }

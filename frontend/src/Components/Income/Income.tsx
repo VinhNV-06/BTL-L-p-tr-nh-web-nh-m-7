@@ -1,146 +1,105 @@
-import React, { useState, ChangeEvent, FormEvent } from "react";
-import styled from "styled-components";
-import DatePicker from "react-datepicker";
-import "react-datepicker/dist/react-datepicker.css";
-import { useGlobalContext } from "../../context/useGlobalContext";
-import Button from "../Button/Button";
-import { plus } from "../../utils/Icons";
+import React, { useEffect, FC } from 'react';
+import styled from 'styled-components';
+import { useGlobalContext } from '../../context/useGlobalContext';
+import { InnerLayout } from '../../styles/Layouts';
+import IncomeItem from '../IncomeItem/IncomeItem';
+import Form from '../Form/Form';   // 👈 form nhập thu nhập đã tách riêng
+import { Transaction } from '../../context/types';
 
-type IncomeInputState = {
-  title: string;
-  amount: string;
-  date: Date | null;
-  category: string;
-  description: string;
-};
-
-const Income: React.FC = () => {
-  const { addIncome, error, setError } = useGlobalContext();
-
-  const [inputState, setInputState] = useState<IncomeInputState>({
-    title: "",
-    amount: "",
-    date: null,
-    category: "",
-    description: "",
-  });
-
-  const { title, amount, date, category, description } = inputState;
-
-  const handleInput =
-    (name: keyof IncomeInputState) =>
-    (e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
-      setInputState({ ...inputState, [name]: e.target.value });
-      setError(null);
-    };
-
-  const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    addIncome({
-      title,
-      amount: Number(amount),
-      date: date ? date.toISOString() : "",
-      category,
-      description,
-      // ❌ không truyền type nữa, backend sẽ tự gán
-    });
-    setInputState({
-      title: "",
-      amount: "",
-      date: null,
-      category: "",
-      description: "",
-    });
+const Income: FC = () => {
+  const {
+    incomes,
+    getIncomes,
+    deleteIncome,
+    totalIncome,
+  } = useGlobalContext() as {
+    incomes: Transaction[];
+    getIncomes: () => Promise<void>;
+    deleteIncome: (id: string) => Promise<void>;
+    totalIncome: () => number;
   };
 
+  useEffect(() => {
+    getIncomes();
+  }, []);
+
   return (
-    <IncomeStyled onSubmit={handleSubmit}>
-      {error && <p className="error">{error}</p>}
-      <input
-        type="text"
-        value={title}
-        name="title"
-        placeholder="Income Title"
-        onChange={handleInput("title")}
-      />
-      <input
-        type="text"
-        value={amount}
-        name="amount"
-        placeholder="Income Amount"
-        onChange={handleInput("amount")}
-      />
-      <DatePicker
-        id="date"
-        placeholderText="Enter A Date"
-        selected={date}
-        dateFormat="dd/MM/yyyy"
-        onChange={(date) => setInputState({ ...inputState, date })}
-      />
-      <select required value={category} onChange={handleInput("category")}>
-        <option value="" disabled>
-          Select Option
-        </option>
-        <option value="salary">Salary</option>
-        <option value="freelancing">Freelancing</option>
-        <option value="investments">Investments</option>
-        <option value="stocks">Stocks</option>
-        <option value="bitcoin">Bitcoin</option>
-        <option value="bank">Bank Transfer</option>
-        <option value="youtube">YouTube</option>
-        <option value="other">Other</option>
-      </select>
-      <textarea
-        name="description"
-        value={description}
-        placeholder="Add A Reference"
-        onChange={handleInput("description")}
-      />
-      <div className="submit-btn">
-        <Button
-          name="Add Income"
-          icon={plus}
-          bPad="1rem"
-          bRad="8px"
-          bg="var(--color-accent)"
-          color="white"
-          hColor="var(--color-green)"
-          onClick={() => {}}
-        />
-      </div>
+    <IncomeStyled>
+      <InnerLayout>
+        <h1>Incomes</h1>
+        <h2 className="total-income">
+          Total Income: <span>${totalIncome()}</span>
+        </h2>
+        <div className="income-content">
+          <div className="form-container">
+            <Form /> {/* 👈 form nhập thu nhập */}
+          </div>
+          <div className="incomes">
+            {incomes.map((income) => {
+              const {
+                _id = '',
+                title = '',
+                amount = 0,
+                date = '',
+                category = '',
+                description = '',
+                type = 'income',
+              } = income;
+
+              return (
+                <IncomeItem
+                  key={_id}
+                  id={_id}
+                  title={title}
+                  description={description}
+                  amount={amount}
+                  date={date}
+                  type={type}
+                  category={category}
+                  indicatorColor="var(--color-green)"
+                  deleteItem={deleteIncome}
+                />
+              );
+            })}
+          </div>
+        </div>
+      </InnerLayout>
     </IncomeStyled>
   );
 };
 
-const IncomeStyled = styled.form`
-    display: flex;
-    overflow: auto;
-    .total-income{
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        background: #FCF6F9;
-        border: 2px solid #FFFFFF;
-        box-shadow: 0px 1px 15px rgba(0, 0, 0, 0.06);
-        border-radius: 20px;
-        padding: 1rem;
-        margin: 1rem 0;
-        font-size: 2rem;
-        gap: .5rem;
-        span{
-            font-size: 2.5rem;
-            font-weight: 800;
-            color: var(--color-green);
-        }
-    }
-    .income-content{
-        display: flex;
-        gap: 2rem;
-        .incomes{
-            flex: 1;
-        }
-    }
-`;
+const IncomeStyled = styled.div`
+  display: flex;
+  overflow: auto;
 
+  .total-income {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: #fcf6f9;
+    border: 2px solid #ffffff;
+    box-shadow: 0px 1px 15px rgba(0, 0, 0, 0.06);
+    border-radius: 20px;
+    padding: 1rem;
+    margin: 1rem 0;
+    font-size: 2rem;
+    gap: 0.5rem;
+
+    span {
+      font-size: 2.5rem;
+      font-weight: 800;
+      color: var(--color-green);
+    }
+  }
+
+  .income-content {
+    display: flex;
+    gap: 2rem;
+
+    .incomes {
+      flex: 1;
+    }
+  }
+`;
 
 export default Income;

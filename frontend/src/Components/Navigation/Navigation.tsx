@@ -3,22 +3,36 @@ import styled from 'styled-components';
 import avatar from '../../img/avatar.png';
 import { signout } from '../../utils/Icons';
 import { menuItems } from '../../utils/menuItems';
+import { logout } from '../../api/auth';
+import { useNavigate } from "react-router-dom";
 
-// 👇 định nghĩa type cho props
 interface NavigationProps {
-    active: number;                 // id của menu đang active
-    setActive: (id: number) => void; // hàm setActive
+    active: number;
+    setActive: (id: number) => void;
 }
 
 const Navigation: React.FC<NavigationProps> = ({ active, setActive }) => {
+    const navigate = useNavigate();
+
+    const handleLogout = async () => {
+        try {
+            await logout();
+            localStorage.removeItem("token");
+            navigate("/", { replace: true }); // điều hướng về "/" (AuthPage)
+        } catch (error) {
+            console.error("Logout error:", error);
+        }
+    };
+
+
     return (
         <NavStyled>
             {/* User Info */}
             <div className="user-con">
                 <img src={avatar} alt="Avatar" />
                 <div className="text">
-                    <h2>Mike</h2>
-                    <p>Your Money</p>
+                    <h2>Nguyen van A</h2>
+                    <p>Your money</p>
                 </div>
             </div>
 
@@ -38,13 +52,14 @@ const Navigation: React.FC<NavigationProps> = ({ active, setActive }) => {
 
             {/* Sign Out */}
             <div className="bottom-nav">
-                <li>
-                    {signout} Sign Out
+                <li onClick={handleLogout}>
+                    {signout} Đăng xuất
                 </li>
             </div>
         </NavStyled>
     );
 };
+
 
 const NavStyled = styled.nav`
     padding: 2rem 1.5rem;

@@ -11,25 +11,25 @@ interface MenuItem {
 export const menuItems: MenuItem[] = [
     {
         id: 1,
-        title: 'Dashboard',
+        title: 'Trang chủ',
         icon: dashboard,
         link: '/dashboard'
     },
     {
         id: 2,
-        title: 'View Transactions',
+        title: 'Chi tiêu tháng',
         icon: transactions,
         link: '/dashboard'
     },
     {
         id: 3,
-        title: 'Incomes',
+        title: 'Thu nhập',
         icon: trend,
         link: '/dashboard'
     },
     {
         id: 4,
-        title: 'Expenses',
+        title: 'Chi tiêu',
         icon: expenses,
         link: '/dashboard'
     }
