@@ -59,6 +59,26 @@ exports.getExpense = async (req, res) => {
   }
 };
 
+// Cập nhật chi phí
+exports.updateExpense = async (req, res) => {
+  const { id } = req.params;
+  const { title, amount, category, description, date } = req.body;
+
+  try {
+    const updated = await ExpenseSchema.findByIdAndUpdate(
+      id,
+      { title, amount, category, description, date },
+      { new: true } // trả về document đã cập nhật
+    );
+    if (!updated) {
+      return res.status(404).json({ message: "Không tìm thấy khoản chi" });
+    }
+    res.status(200).json(updated);
+  } catch (error) {
+    res.status(500).json({ message: "Server Error" });
+  }
+};
+
 // Xóa chi phí
 exports.deleteExpense = async (req, res) => {
   const { id } = req.params;
