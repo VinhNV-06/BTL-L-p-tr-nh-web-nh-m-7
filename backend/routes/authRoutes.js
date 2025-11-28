@@ -23,11 +23,20 @@ router.post("/register", async (req, res) => {
     const newUser = new User({ name, email, password: hashed });
     await newUser.save();
 
-    res.json({ message: "Đăng ký thành công" });
+    const token = jwt.sign({ id: newUser._id }, process.env.JWT_SECRET, {
+      expiresIn: "7d",
+    });
+
+    res.json({
+      message: "Đăng ký thành công",
+      token,
+      user: { id: newUser._id, name: newUser.name, email: newUser.email },
+    });
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
 });
+
 
 // ĐĂNG NHẬP
 router.post("/login", async (req, res) => {
