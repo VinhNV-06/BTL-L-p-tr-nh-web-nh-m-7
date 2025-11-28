@@ -18,7 +18,7 @@ const Navigation: React.FC<NavigationProps> = ({ active, setActive }) => {
         try {
             await logout();
             localStorage.removeItem("token");
-            navigate("/", { replace: true }); // điều hướng về "/" (AuthPage)
+            navigate("/", { replace: true });
         } catch (error) {
             console.error("Logout error:", error);
         }
