@@ -10,11 +10,11 @@ const formatAmount = (value) => {
 
 // Thêm chi phí mới
 exports.addExpense = async (req, res) => {
-  const { title, amount, category, description, date } = req.body;
+  const {amount, category, description, date } = req.body;
 
   try {
     // Validations
-    if (!title || !category || !description || !date) {
+    if (!category || !description || !date) {
       return res
         .status(400)
         .json({ message: "Vui lòng điền vào tất cả ô trống!" });
@@ -26,16 +26,14 @@ exports.addExpense = async (req, res) => {
     }
 
     const expense = new ExpenseSchema({
-      title,
       amount,
       category,
       description,
       date,
     });
 
-    await expense.save();
-    console.log(expense);
-    res.status(200).json({ message: "Thêm khoản chi thành công" });
+    const savedExpense = await expense.save();
+    res.status(200).json(savedExpense); // trả về object vừa lưu
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: "Server Error" });
