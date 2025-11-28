@@ -160,7 +160,7 @@ const ExpenseManager: React.FC = () => {
               <td>{formatAmount(e.amount)}</td>
               <td>{dateFormat(e.date)}</td>
               <td>
-                {categories.find((c) => c._id === e.category)?.name || "N/A"}
+                {categories.find((c) => c._id === e.category)?.name || "Khác"}
               </td>
               <td>
                 <button
