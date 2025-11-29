@@ -3,7 +3,10 @@ const Category = require("../models/CategoryModel");
 // Thêm danh mục
 exports.addCategory = async (req, res) => {
   const { name } = req.body;
-  if (!name) return res.status(400).json({ message: "Tên danh mục không được để trống" });
+  if (!name)
+    return res
+      .status(400)
+      .json({ message: "Tên danh mục không được để trống" });
 
   try {
     const exists = await Category.findOne({ name });
@@ -38,7 +41,8 @@ exports.updateCategory = async (req, res) => {
       { name },
       { new: true, runValidators: true }
     );
-    if (!updated) return res.status(404).json({ message: "Không tìm thấy danh mục" });
+    if (!updated)
+      return res.status(404).json({ message: "Không tìm thấy danh mục" });
     res.status(200).json(updated);
   } catch (error) {
     res.status(500).json({ message: "Server Error" });

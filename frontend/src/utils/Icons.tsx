@@ -25,6 +25,7 @@ export const comment: ReactElement = <i className="fa-solid fa-comment"></i>
 export const plus: ReactElement = <i className="fa-solid fa-plus"></i>
 export const trash: ReactElement = <i className="fa-solid fa-trash"></i>
 export const signout: ReactElement = <i className="fa-solid fa-right-from-bracket"></i>
+export const budget: ReactElement = <i className="fa-solid fa-calculator"></i>; 
 
 // Expense & category icons
 export const takeaway: ReactElement = <i className="fa-solid fa-utensils"></i>

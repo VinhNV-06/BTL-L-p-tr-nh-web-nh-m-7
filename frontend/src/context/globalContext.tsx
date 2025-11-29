@@ -4,6 +4,23 @@ import { Transaction, TransactionInput, GlobalContextType } from "./types";
 
 const BASE_URL = "http://localhost:5000/api/v1/";
 
+// Tạo axios instance có interceptor
+const API = axios.create({
+  baseURL: BASE_URL,
+  headers: { "Content-Type": "application/json" },
+});
+
+API.interceptors.request.use(
+  (config) => {
+    const token = localStorage.getItem("token");
+    if (token) {
+      config.headers.Authorization = `Bearer ${token}`;
+    }
+    return config;
+  },
+  (error) => Promise.reject(error)
+);
+
 interface GlobalProviderProps {
   children: ReactNode;
 }
@@ -23,7 +40,7 @@ export const GlobalProvider: React.FC<GlobalProviderProps> = ({ children }) => {
   // ---------- Income ----------
   const addIncome = async (income: TransactionInput) => {
     try {
-      await axios.post(`${BASE_URL}add-income`, income);
+      await API.post("add-income", income);
       await getIncomes();
       await fetchTotalIncome();
     } catch (err: unknown) {
@@ -33,12 +50,12 @@ export const GlobalProvider: React.FC<GlobalProviderProps> = ({ children }) => {
   };
 
   const getIncomes = async () => {
-    const response = await axios.get<Transaction[]>(`${BASE_URL}get-incomes`);
+    const response = await API.get<Transaction[]>("get-incomes");
     setIncomes(response.data);
   };
 
   const deleteIncome = async (id: string) => {
-    await axios.delete(`${BASE_URL}delete-income/${id}`);
+    await API.delete(`delete-income/${id}`);
     await getIncomes();
     await fetchTotalIncome();
   };
@@ -47,8 +64,8 @@ export const GlobalProvider: React.FC<GlobalProviderProps> = ({ children }) => {
 
   const fetchTotalIncome = async () => {
     try {
-      const res = await axios.get<{ total: number; formattedTotal: string }>(
-        `${BASE_URL}total-income`
+      const res = await API.get<{ total: number; formattedTotal: string }>(
+        "total-income"
       );
       setFormattedTotalIncome(res.data.formattedTotal);
     } catch (err) {
@@ -59,7 +76,7 @@ export const GlobalProvider: React.FC<GlobalProviderProps> = ({ children }) => {
   // ---------- Expense ----------
   const addExpense = async (expense: TransactionInput) => {
     try {
-      await axios.post(`${BASE_URL}add-expense`, expense);
+      await API.post("add-expense", expense);
       await getExpenses();
       await fetchTotalExpense();
     } catch (err: unknown) {
@@ -69,12 +86,12 @@ export const GlobalProvider: React.FC<GlobalProviderProps> = ({ children }) => {
   };
 
   const getExpenses = async () => {
-    const response = await axios.get<Transaction[]>(`${BASE_URL}get-expenses`);
+    const response = await API.get<Transaction[]>("get-expenses");
     setExpenses(response.data);
   };
 
   const deleteExpense = async (id: string) => {
-    await axios.delete(`${BASE_URL}delete-expense/${id}`);
+    await API.delete(`delete-expense/${id}`);
     await getExpenses();
     await fetchTotalExpense();
   };
@@ -84,8 +101,8 @@ export const GlobalProvider: React.FC<GlobalProviderProps> = ({ children }) => {
 
   const fetchTotalExpense = async () => {
     try {
-      const res = await axios.get<{ total: number; formattedTotal: string }>(
-        `${BASE_URL}total-expense`
+      const res = await API.get<{ total: number; formattedTotal: string }>(
+        "total-expense"
       );
       setFormattedTotalExpense(res.data.formattedTotal);
     } catch (err) {

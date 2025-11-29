@@ -24,14 +24,14 @@ const ExpenseSchema = new mongoose.Schema(
       trim: true,
     },
     category: {
-      type: String,
+      type: mongoose.Schema.Types.ObjectId,
       required: true,
       trim: true,
     },
     description: {
       type: String,
       required: true,
-      maxLength: 20,
+      maxLength: 200,
       trim: true,
     },
   },

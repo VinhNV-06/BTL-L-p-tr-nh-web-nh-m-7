@@ -160,7 +160,6 @@ const BudgetManager: React.FC = () => {
 
 const BudgetManagerStyled = styled.div`
   padding: 2rem;
-
   h1 {
     font-size: 2rem;
     margin-bottom: 2rem;
@@ -172,7 +171,6 @@ const ContentWrapper = styled.div`
   display: grid;
   grid-template-columns: 1fr 1.5fr;
   gap: 2rem;
-
   @media (max-width: 968px) {
     grid-template-columns: 1fr;
   }
@@ -199,7 +197,6 @@ const FilterSection = styled.div`
   display: flex;
   gap: 1rem;
   margin-bottom: 1.5rem;
-
   select {
     padding: 0.75rem 1rem;
     border-radius: 5px;
@@ -210,7 +207,6 @@ const FilterSection = styled.div`
     font-size: 1rem;
     color: rgba(34, 34, 96, 0.9);
     outline: none;
-
     &:focus {
       border-color: var(--color-accent);
     }
@@ -237,42 +233,34 @@ const BudgetItem = styled.div<BudgetItemProps>`
   justify-content: space-between;
   align-items: flex-start;
   transition: all 0.3s ease;
-
   &:hover {
     transform: translateY(-3px);
     box-shadow: 0px 4px 20px rgba(0, 0, 0, 0.1);
   }
-
   .info {
     flex: 1;
-
     h3 {
       font-size: 1.2rem;
       color: rgba(34, 34, 96, 0.9);
       margin-bottom: 0.5rem;
     }
-
     .amount {
       font-size: 1.5rem;
       font-weight: 700;
       color: var(--color-accent);
       margin-bottom: 0.75rem;
     }
-
     .spending {
       margin-top: 1rem;
       font-size: 0.9rem;
-
       .spent {
         color: #ff4757;
         margin-bottom: 0.25rem;
       }
-
       .remaining {
         color: #2ed573;
         margin-bottom: 0.5rem;
       }
-
       .progress-bar {
         width: 100%;
         height: 8px;
@@ -280,7 +268,6 @@ const BudgetItem = styled.div<BudgetItemProps>`
         border-radius: 10px;
         overflow: hidden;
         margin: 0.5rem 0;
-
         .progress {
           height: 100%;
           background: ${(props) =>
@@ -288,14 +275,12 @@ const BudgetItem = styled.div<BudgetItemProps>`
           transition: width 0.3s ease;
         }
       }
-
       .percent {
         color: rgba(34, 34, 96, 0.7);
         font-size: 0.85rem;
       }
     }
   }
-
   .delete-btn {
     padding: 0.5rem 1.5rem;
     background: #ff4757;
@@ -306,7 +291,6 @@ const BudgetItem = styled.div<BudgetItemProps>`
     font-weight: 600;
     transition: all 0.3s ease;
     font-size: 0.9rem;
-
     &:hover {
       background: #ee2f3a;
       transform: scale(1.05);

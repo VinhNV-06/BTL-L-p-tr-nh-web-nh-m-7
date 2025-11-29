@@ -11,6 +11,7 @@ import Income from "../Components/Income/Income";
 import Expenses from "../Components/Expenses/Expenses";
 
 import { useGlobalContext } from "../context/useGlobalContext";
+import BudgetManager from "./BudgetManager";
 
 const Home: React.FC = () => {
   const [active, setActive] = useState<number>(1);
@@ -29,6 +30,12 @@ const Home: React.FC = () => {
         return <Income />;
       case 4:
         return <Expenses />;
+      case 5:
+        return <CategoryManager />; 
+      case 6:
+        return <ExpensesManager />;
+      case 7:
+        return <BudgetManager />;
       default:
         return <Dashboard />;
     }
