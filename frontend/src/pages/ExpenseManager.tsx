@@ -142,8 +142,8 @@ const ExpenseManager: React.FC = () => {
           <button onClick={handleAdd}>➕ Thêm</button>
         )}
       </div>
-
-      <table>
+      <div className="table-wrapper">
+         <table>
         <thead>
           <tr>
             <th>Mô tả</th>
@@ -188,6 +188,7 @@ const ExpenseManager: React.FC = () => {
           ))}
         </tbody>
       </table>
+      </div>
       <ToastContainer position="top-right" autoClose={3000} />
     </ExpenseStyled>
   );
@@ -197,9 +198,10 @@ export default ExpenseManager;
 
 const ExpenseStyled = styled.div`
   padding: 2rem;
-  background: #fcf6f9;
+  background: #fff;
   border-radius: 16px;
   box-shadow: 0px 1px 15px rgba(0, 0, 0, 0.06);
+  height: 84%;
 
   h2 {
     margin-bottom: 1rem;
@@ -209,15 +211,30 @@ const ExpenseStyled = styled.div`
     display: flex;
     gap: 1rem;
     margin-bottom: 1.5rem;
+    align-items: center;
     flex-wrap: wrap;
 
     input,
     select {
       padding: 0.6rem 1rem;
-      border: 2px solid #ddd;
+      border: 2px solid #E0E0E0;
       border-radius: 8px;
       font-size: 1rem;
+      transition: border-color 0.3s ease, box-shadow 0.3s ease, transform 0.3s ease;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
     }
+      input:hover,
+      select:hover{
+           transform: translateY(-1px);
+           box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+           border-color: #C0C0C0;
+      }
+      input:focus,
+      select:focus{
+         outline: none;
+         border-color: #DDA0DD;
+         box-shadow: 0 0 0 2px rgba(221, 160, 221, 0.2);
+      }
 
     button {
       padding: 0.6rem 1.2rem;
@@ -228,13 +245,23 @@ const ExpenseStyled = styled.div`
       font-weight: 600;
       cursor: pointer;
       transition: 0.3s ease;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
       &:hover {
         background: #388e3c;
+        box-shadow: 0 6px 10px rgba(0, 0, 0, 0.15);
+        transform: scale(1.02);
       }
+
     }
   }
+  .table-wrapper{
+      max-height: 400px;
+      overflow-y: auto;
+      overflow-x: hidden;
 
-  table {
+  }
+
+  .table-wrapper table {
     width: 100%;
     border-collapse: collapse;
     background: #fff;
@@ -251,6 +278,9 @@ const ExpenseStyled = styled.div`
     th {
       background: #f5f5f5;
       font-weight: 600;
+      position: sticky;
+      top: 0;
+      z-index: 10;
     }
 
     tr:hover {
@@ -266,6 +296,7 @@ const ExpenseStyled = styled.div`
       cursor: pointer;
       display: inline-flex;
       align-items: center;
+      transition: background-color 0.2s ease, color 0.2s ease, transform 0.2s ease;
       gap: 0.5rem;
     }
 
@@ -274,6 +305,7 @@ const ExpenseStyled = styled.div`
       color: #1976d2;
       &:hover {
         background: #bbdefb;
+        transform: scale(1.1);
       }
     }
 
@@ -282,6 +314,7 @@ const ExpenseStyled = styled.div`
       color: #d32f2f;
       &:hover {
         background: #ffcdd2;
+        transform: scale(1.1);
       }
     }
   }
