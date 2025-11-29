@@ -44,5 +44,11 @@ export const menuItems: MenuItem[] = [
         title: 'Quản lý khoản chi',
         icon: expenses,
         link: '/expenses'
+    },
+    {
+        id: 7,
+        title: 'Sổ chi tiêu tháng',
+        icon: transactions,
+        link: '/monthly-report'
     }
 ]

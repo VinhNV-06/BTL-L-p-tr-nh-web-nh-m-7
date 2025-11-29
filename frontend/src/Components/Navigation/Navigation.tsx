@@ -92,41 +92,51 @@ const Navigation: React.FC<NavigationProps> = ({ active, setActive }) => {
 };
 
 const NavStyled = styled.nav`
-    padding: 2rem 1.5rem;
+    padding: 2.5rem 2rem 5rem 2rem; /* Tăng padding để rộng rãi hơn */
     width: 374px;
     height: 100%;
-    background: rgba(252, 246, 249, 0.78);
+    box-sizing: border-box;
+    /* THAY ĐỔI MÀU NỀN & HIỆU ỨNG TỔNG THỂ */
+    background: #FFFFFF; /* Đổi nền sang màu trắng tinh */
     border: 3px solid #FFFFFF;
     backdrop-filter: blur(4.5px);
     border-radius: 32px;
+    box-shadow: 0px 4px 20px rgba(0, 0, 0, 0.08); /* Thêm bóng đổ nhẹ để nổi bật */
+    
     display: flex;
     flex-direction: column;
-    justify-content: space-between;
-    gap: 2rem;
+    justify-content: flex-start;
+    gap: 3rem; /* Tăng khoảng cách giữa các khối */
 
     .user-con {
         height: 100px;
         display: flex;
         align-items: center;
-        gap: 1rem;
+        gap: 1.5rem; /* Tăng khoảng cách avatar và text */
 
         img {
             width: 80px;
             height: 80px;
             border-radius: 50%;
             object-fit: cover;
-            background: #fcf6f9;
+            background: #F8F8F8;
             border: 2px solid #FFFFFF;
             padding: 0.2rem;
-            box-shadow: 0px 1px 17px rgba(0, 0, 0, 0.06);
+            box-shadow: 0px 1px 17px rgba(0, 0, 0, 0.08);
         }
 
         h2 {
-            color: rgba(34, 34, 96, 1);
+            /* Tăng kích thước và làm đậm tên người dùng */
+            font-size: 1.6rem; 
+            color: #222260; 
+            font-weight: 700;
+            margin-bottom: 0.2rem;
         }
 
         p {
+            /* Giữ màu chữ nhẹ nhàng hơn */
             color: rgba(34, 34, 96, 0.6);
+            font-size: 1rem;
         }
     }
 
@@ -139,27 +149,39 @@ const NavStyled = styled.nav`
             display: grid;
             grid-template-columns: 40px auto;
             align-items: center;
-            margin: 0.6rem 0;
+            margin: 0.4rem 0; /* Giảm margin dọc để các mục gần nhau hơn */
             font-weight: 500;
             cursor: pointer;
-            transition: all 0.4s ease-in-out;
-            color: rgba(34, 34, 96, 0.6);
-            padding-left: 1rem;
+            transition: all 0.3s ease-in-out; /* Giảm thời gian transition để nhanh hơn */
+            color: rgba(34, 34, 96, 0.8); /* Chữ hơi đậm hơn */
+            padding: 0.8rem 1rem; /* Thêm padding cho vùng bấm/hover */
+            border-radius: 12px; /* Bo góc cho từng mục */
             position: relative;
 
             i {
-                color: rgba(34, 34, 96, 0.6);
-                font-size: 1.4rem;
-                transition: all 0.4s ease-in-out;
+                color: rgba(34, 34, 96, 0.8);
+                font-size: 1.5rem;
+                transition: all 0.3s ease-in-out;
+            }
+            
+            /* Hiệu ứng RÊ CHUỘT (Hover) */
+            &:hover {
+                background: rgba(245, 245, 245, 0.8); /* Màu nền xám nhạt */
+                color: #222260; /* Màu chữ đậm */
+                i {
+                    color: #222260; 
+                }
             }
         }
     }
 
     .active {
-        color: rgba(34, 34, 96, 1) !important;
+        color: #D946EF !important; /* Đổi màu chữ active thành màu nổi bật (Tím/Hồng) */
+        background: rgba(217, 70, 239, 0.1); /* Thêm màu nền nhạt cho active */
+        font-weight: 600;
 
         i {
-            color: rgba(34, 34, 96, 1) !important;
+            color: #D946EF !important;
         }
 
         &::before {
@@ -167,10 +189,35 @@ const NavStyled = styled.nav`
             position: absolute;
             left: 0;
             top: 0;
-            width: 4px;
+            width: 5px; /* Tăng độ dày dải active */
             height: 100%;
-            background: #222260;
+            background: #D946EF; /* Đổi màu dải active */
             border-radius: 0 10px 10px 0;
+        }
+    }
+    
+    .bottom-nav {
+        margin-top: auto;
+        li {
+            display: flex;
+            align-items: center;
+            padding: 0.8rem 1rem;
+            cursor: pointer;
+            transition: all 0.3s ease-in-out;
+            color: rgba(255, 0, 0, 0.7); /* Màu chữ Đăng xuất */
+            font-weight: 600;
+            border-radius: 12px;
+            
+            
+            i {
+                margin-right: 0.8rem;
+                font-size: 1.5rem;
+            }
+
+            &:hover {
+                background: rgba(255, 0, 0, 0.1); /* Nền đỏ nhạt khi hover */
+                color: red;
+            }
         }
     }
 `;
