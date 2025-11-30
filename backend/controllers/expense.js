@@ -9,12 +9,11 @@ const formatAmount = (value) => {
   return value.toString();
 };
 
-// Thêm chi phí mới
+// ✅ Thêm chi phí mới
 exports.addExpense = async (req, res) => {
   const { amount, categoryId, description, date } = req.body;
 
   try {
-    // Validations
     if (!categoryId || !description || !date) {
       return res.status(400).json({ message: "Vui lòng điền vào tất cả ô trống!" });
     }
@@ -22,17 +21,20 @@ exports.addExpense = async (req, res) => {
       return res.status(400).json({ message: "Số tiền phải là một số lớn hơn 0!" });
     }
 
-    // Kiểm tra danh mục có tồn tại không
     const category = await Category.findById(categoryId);
     if (!category) {
       return res.status(404).json({ message: "Danh mục không tồn tại" });
     }
 
+    const d = new Date(date);
+
     const expense = new Expense({
       amount,
       category: categoryId,
       description,
-      date,
+      date: d,
+      month: d.getMonth() + 1,
+      year: d.getFullYear(),
     });
 
     const savedExpense = await expense.save();
@@ -43,12 +45,12 @@ exports.addExpense = async (req, res) => {
   }
 };
 
-// Lấy danh sách chi phí, trả thêm trường formattedAmount
+// ✅ Lấy toàn bộ chi phí
 exports.getExpense = async (req, res) => {
   try {
     const expenses = await Expense.find()
       .sort({ createdAt: -1 })
-      .populate("category", "name"); // lấy tên danh mục
+      .populate("category", "name");
 
     const formatted = expenses.map((item) => ({
       ...item.toObject(),
@@ -62,13 +64,40 @@ exports.getExpense = async (req, res) => {
   }
 };
 
-// Cập nhật chi phí
+// ✅ Lấy chi phí theo tháng/năm
+exports.getExpenseByMonthYear = async (req, res) => {
+  const { month, year } = req.query;
+
+  try {
+    if (!month || !year) {
+      return res.status(400).json({ message: "Thiếu tham số month hoặc year" });
+    }
+
+    const expenses = await Expense.find({
+      month: Number(month),
+      year: Number(year),
+    })
+      .sort({ date: -1 })
+      .populate("category", "name");
+
+    const formatted = expenses.map((item) => ({
+      ...item.toObject(),
+      formattedAmount: formatAmount(item.amount),
+    }));
+
+    res.status(200).json(formatted);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Server Error" });
+  }
+};
+
+// ✅ Cập nhật chi phí
 exports.updateExpense = async (req, res) => {
   const { id } = req.params;
   const { amount, categoryId, description, date } = req.body;
 
   try {
-    // Kiểm tra danh mục có tồn tại không
     if (categoryId) {
       const category = await Category.findById(categoryId);
       if (!category) {
@@ -76,9 +105,18 @@ exports.updateExpense = async (req, res) => {
       }
     }
 
+    const d = new Date(date);
+
     const updated = await Expense.findByIdAndUpdate(
       id,
-      { amount, category: categoryId, description, date },
+      {
+        amount,
+        category: categoryId,
+        description,
+        date: d,
+        month: d.getMonth() + 1,
+        year: d.getFullYear(),
+      },
       { new: true }
     ).populate("category", "name");
 
@@ -92,7 +130,7 @@ exports.updateExpense = async (req, res) => {
   }
 };
 
-// Xóa chi phí
+// ✅ Xóa chi phí
 exports.deleteExpense = async (req, res) => {
   const { id } = req.params;
 
@@ -108,7 +146,7 @@ exports.deleteExpense = async (req, res) => {
   }
 };
 
-// Endpoint mới: Tổng chi phí rút gọn
+// ✅ Tổng chi phí
 exports.getTotalExpense = async (req, res) => {
   try {
     const expenses = await Expense.find();

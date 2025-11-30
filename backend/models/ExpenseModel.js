@@ -16,8 +16,16 @@ const ExpenseSchema = new mongoose.Schema(
       required: true,
       trim: true,
     },
+    month: {
+      type: Number,
+      required: true, // ✅ thêm tháng
+    },
+    year: {
+      type: Number,
+      required: true, // ✅ thêm năm
+    },
     category: {
-      type: mongoose.Schema.Types.ObjectId, // 🔗 tham chiếu sang Category
+      type: mongoose.Schema.Types.ObjectId,
       ref: "Category",
       required: true,
     },

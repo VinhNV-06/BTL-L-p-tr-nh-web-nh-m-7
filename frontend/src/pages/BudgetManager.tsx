@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import styled from "styled-components";
-import { createPortal } from "react-dom";   // ✅ thêm Portal
+import { createPortal } from "react-dom"; 
 import BudgetForm from "../Components/Budget/BudgetForm";
 import { getBudgetsByMonth, deleteBudget, updateBudget } from "../api/budgetApi";
 import type { Budget } from "../api/budgetApi";
@@ -213,7 +213,7 @@ const BudgetManagerStyled = styled.div`
   h1 {
     font-size: 2rem;
     margin-bottom: 2rem;
-    color: rgba(34, 34, 96, 0.9);
+    color: #333;
   }
 `;
 
@@ -241,7 +241,6 @@ const ListSection = styled.div``;
 const SectionTitle = styled.h2`
   font-size: 1.5rem;
   margin-bottom: 1.5rem;
-  color: rgba(34, 34, 96, 0.9);
 `;
 
 const FilterSection = styled.div`
@@ -257,7 +256,6 @@ const FilterSection = styled.div`
     box-shadow: 0px 1px 15px rgba(0, 0, 0, 0.06);
     cursor: pointer;
     font-size: 1rem;
-    color: rgba(34, 34, 96, 0.9);
     outline: none;
 
     &:focus {
@@ -293,7 +291,6 @@ const BudgetItem = styled.div`
     .label {
       font-size: 1.1rem;
       font-weight: 500;
-      color: rgba(34, 34, 96, 0.9);
       font-family: "Segoe UI", sans-serif;
     }
 
@@ -306,22 +303,28 @@ const BudgetItem = styled.div`
 
     .time {
       font-size: 0.95rem;
-      color: rgba(34, 34, 96, 0.7);
+      color: rgba(0, 0, 108, 0.7);
     }
   }
 
   .actions {
     display: flex;
-    gap: 0.4rem;
+    gap: 0.5rem;
 
     .update-btn,
     .delete-btn {
-      padding: 0.35rem 0.7rem;
+      min-width: 70px;
+      height: 32px;
+      padding: 0 0.6rem;
       font-size: 0.85rem;
       border: none;
       border-radius: 6px;
       cursor: pointer;
       font-weight: 500;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      white-space: nowrap;
       transition: background 0.2s ease;
     }
 
@@ -357,13 +360,11 @@ const ErrorMessage = styled.div`
 const LoadingMessage = styled.div`
   padding: 1rem;
   text-align: center;
-  color: rgba(34, 34, 96, 0.6);
 `;
 
 const EmptyState = styled.div`
   padding: 3rem;
   text-align: center;
-  color: rgba(34, 34, 96, 0.6);
   font-size: 1.1rem;
   background: #fcf6f9;
   border-radius: 15px;
@@ -393,7 +394,6 @@ const ModalContent = styled.div`
   h3 {
     margin-bottom: 1rem;
     font-size: 1.2rem;
-    color: rgba(34, 34, 96, 0.9);
   }
 
   form {
@@ -404,7 +404,6 @@ const ModalContent = styled.div`
 
   label {
     font-size: 0.9rem;
-    color: rgba(34, 34, 96, 0.9);
     display: flex;
     flex-direction: column;
     gap: 0.3rem;

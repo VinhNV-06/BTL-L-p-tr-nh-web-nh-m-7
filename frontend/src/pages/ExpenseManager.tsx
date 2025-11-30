@@ -40,7 +40,7 @@ const ExpenseManager: React.FC = () => {
     amount: "",
     description: "",
     date: "",
-    categoryId: "", // 🔗 gửi ObjectId
+    categoryId: "", 
   });
   const [editingId, setEditingId] = useState<string | null>(null);
   const [showEditModal, setShowEditModal] = useState(false);
@@ -68,9 +68,12 @@ const ExpenseManager: React.FC = () => {
 
   const handleAdd = async () => {
     try {
+      const d = new Date(form.date);
       const res = await addExpense({
         ...form,
         amount: Number(form.amount),
+        month: d.getMonth() + 1,
+        year: d.getFullYear(),
       });
       setExpenses([...expenses, res.data]);
       setForm({ amount: "", description: "", date: "", categoryId: "" });
@@ -81,11 +84,15 @@ const ExpenseManager: React.FC = () => {
     }
   };
 
+
   const handleUpdate = async (id: string) => {
     try {
+      const d = new Date(form.date);
       const res = await updateExpense(id, {
         ...form,
         amount: Number(form.amount),
+        month: d.getMonth() + 1,
+        year: d.getFullYear(),
       });
       setExpenses(expenses.map((e) => (e._id === id ? res.data : e)));
       setEditingId(null);
@@ -259,6 +266,7 @@ const ExpenseStyled = styled.div`
 
   h2 {
     margin-bottom: 1rem;
+    color: #333;
   }
 
   .form {

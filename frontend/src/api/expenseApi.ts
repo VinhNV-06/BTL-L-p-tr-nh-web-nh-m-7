@@ -7,28 +7,31 @@ export const getExpenses = () => {
   return axios.get(`${API_URL}/expenses`);
 };
 
-// Thêm chi phí mới
 export const addExpense = (expense: {
   amount: number;
   description: string;
   date: string;
-  categoryId: string; // 🔗 gửi ObjectId thay vì tên
+  categoryId: string;
+  month: number;
+  year: number;
 }) => {
   return axios.post(`${API_URL}/expenses`, expense);
 };
 
-// Cập nhật chi phí
 export const updateExpense = (
   id: string,
   expense: {
     amount: number;
     description: string;
     date: string;
-    categoryId: string; // 🔗 gửi ObjectId thay vì tên
+    categoryId: string;
+    month: number;
+    year: number;
   }
 ) => {
   return axios.put(`${API_URL}/expenses/${id}`, expense);
 };
+
 
 // Xóa chi phí
 export const deleteExpense = (id: string) => {
