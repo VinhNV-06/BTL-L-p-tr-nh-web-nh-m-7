@@ -10,6 +10,7 @@ import Dashboard from "../Components/Dashboard/Dashboard";
 import CategoryManager from "./CategoryManager";
 import ExpensesManager from "./ExpenseManager";
 import MonthlyReport from "./MonthlyReport";
+import BudgetManager from "./BudgetManager";
 
 import { useGlobalContext } from "../context/useGlobalContext";
 
@@ -30,6 +31,8 @@ const Home: React.FC = () => {
         return <ExpensesManager />;
       case 7:
         return <MonthlyReport />;
+      case 8:
+        return <BudgetManager />;
       default:
         return <Dashboard />;
     }

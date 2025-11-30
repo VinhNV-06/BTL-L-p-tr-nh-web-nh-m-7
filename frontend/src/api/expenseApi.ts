@@ -4,7 +4,7 @@ const API_URL = "/api/v1";
 
 // Lấy danh sách chi phí
 export const getExpenses = () => {
-  return axios.get(`${API_URL}/get-expenses`);
+  return axios.get(`${API_URL}/expenses`);
 };
 
 // Thêm chi phí mới
@@ -12,9 +12,9 @@ export const addExpense = (expense: {
   amount: number;
   description: string;
   date: string;
-  category: string;
+  categoryId: string; // 🔗 gửi ObjectId thay vì tên
 }) => {
-  return axios.post(`${API_URL}/add-expense`, expense);
+  return axios.post(`${API_URL}/expenses`, expense);
 };
 
 // Cập nhật chi phí
@@ -24,18 +24,18 @@ export const updateExpense = (
     amount: number;
     description: string;
     date: string;
-    category: string;
+    categoryId: string; // 🔗 gửi ObjectId thay vì tên
   }
 ) => {
-  return axios.put(`${API_URL}/update-expense/${id}`, expense);
+  return axios.put(`${API_URL}/expenses/${id}`, expense);
 };
 
 // Xóa chi phí
 export const deleteExpense = (id: string) => {
-  return axios.delete(`${API_URL}/delete-expense/${id}`);
+  return axios.delete(`${API_URL}/expenses/${id}`);
 };
 
 // Lấy tổng chi phí
 export const getTotalExpense = () => {
-  return axios.get(`${API_URL}/total-expense`);
+  return axios.get(`${API_URL}/expenses/total`);
 };

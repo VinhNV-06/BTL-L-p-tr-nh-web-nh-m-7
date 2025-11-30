@@ -6,6 +6,7 @@ import OAuthCallback from "./pages/OAuthCallback";
 import CategoryManager from "./pages/CategoryManager";
 import ExpenseManager from "./pages/ExpenseManager";
 import MonthlyReport from "./pages/MonthlyReport";
+import BudgetManager from "./pages/BudgetManager";
 
 // App.tsx
 const App: React.FC = () => {
@@ -17,6 +18,8 @@ const App: React.FC = () => {
       <Route path="/categories" element={<CategoryManager />} />
       <Route path="/expenses" element={<ExpenseManager />} />
       <Route path="/monthly-report" element={<MonthlyReport />} />
+      <Route path="/budgets" element={<BudgetManager />} />
+
     </Routes>
   );
 };
