@@ -138,122 +138,138 @@ const CategoryManager: React.FC = () => {
 export default CategoryManager;
 
 const CategoryStyled = styled.div`
-  padding: 2rem;
-  background: #fcf6f9;
-  border-radius: 16px;
-  box-shadow: 0px 1px 15px rgba(0,0,0,0.06);
+    /* GIỮ NGUYÊN KÍCH THƯỚC VÀ CĂN CHỈNH */
+    padding: 2rem;
+    background: #f6e7e1ff;
+    border-radius: 16px;
+    box-shadow: 0px 1px 15px rgba(0,0,0,0.06);
 
-  h2 {
-    margin-bottom: 1rem;
-    color: #333;
-  }
-
-  .form {
-    display: flex;
-    gap: 1rem;
-    margin-bottom: 1.5rem;
-
-    input {
-      flex: 1;
-      padding: 0.6rem 1rem;
-      border: 2px solid #ddd;
-      border-radius: 8px;
-      font-size: 1rem;
+    h2 {
+        margin-bottom: 1rem;
+        color: #333; 
     }
 
-    button {
-      padding: 0.6rem 1.2rem;
-      border: none;
-      border-radius: 8px;
-      background: var(--color-green, #4caf50);
-      color: #fff;
-      font-weight: 600;
-      cursor: pointer;
-      transition: 0.3s ease;
+    .form {
+        display: flex;
+        gap: 1rem;
+        margin-bottom: 1.5rem;
 
-      &:hover {
-        background: #43a047;
-      }
-    }
-  }
+        input {
+            flex: 1;
+            padding: 0.6rem 1rem; 
+            border-radius: 8px;
+            font-size: 1rem;
+            
+            /* THAY ĐỔI MÀU NỀN INPUT TÊN DANH MỤC MỚI */
+            border: 2px solid #771111ff;
+            background: linear-gradient(to right, #f2c2b5ff, #f5c9b9ff); /* Nền hồng gradient */
+            color: #0a0a0aff; /* Màu chữ đen đậm */
+            
+            &:focus {
+                border-color: #0e090bff; /* Viền tím khi focus */
+            }
+            
+            /* Màu placeholder */
+            &::placeholder {
+                color: rgba(12, 12, 13, 0.6); 
+            }
+        }
 
-  table {
-    width: 100%;
-    border-collapse: collapse;
-    background: #fff;
-    border-radius: 12px;
-    overflow: hidden;
+        button {
+            padding: 0.6rem 1.2rem; 
+            border: none;
+            border-radius: 8px;
+            
+            /* THAY ĐỔI MÀU NÚT "THÊM" */
+            background: #4CAF50; /* Xanh lá cây */
+            color: #fff;
+            
+            font-weight: 600;
+            cursor: pointer;
+            transition: 0.3s ease;
 
-    th, td {
-      padding: 0.8rem 1rem;
-      text-align: left;
-      border-bottom: 1px solid #eee;
-    }
-
-    th {
-      background: #f5f5f5;
-      font-weight: 600;
-    }
-
-    tr:hover {
-      background: #fafafa;
-    }
-
-    tr.editing {
-      background: #fffde7; 
-    }
-
-    input {
-      padding: 0.4rem 0.6rem;
-      border: 1px solid #ccc;
-      border-radius: 6px;
+            &:hover {
+                background: #55d63bff;
+            }
+        }
     }
 
-    button {
-      margin-right: 0.5rem;
-      padding: 0.4rem 0.8rem;
-      border: none;
-      border-radius: 6px;
-      cursor: pointer;
-      font-size: 0.9rem;
-      font-weight: 500;
-      transition: 0.3s ease;
-    }
+    table {
+        width: 100%;
+        border-collapse: collapse;
+        background: #f1e8e8ff;
+        border-radius: 12px;
+        overflow: hidden;
+        box-shadow: 0px 2px 10px rgba(0,0,0,0.04); 
 
-    .edit {
-      background: #2196f3;
-      color: #fff;
-      &:hover { background: #1976d2; }
-    }
+        th, td {
+            padding: 0.8rem 1rem; 
+            text-align: left;
+            border-bottom: 1px solid #f2cdcdff; 
+            color: #555555; 
+        }
+        
+        /* THAY ĐỔI: Áp dụng hồng gradient cho cột Tên Danh mục (cột đầu tiên) */
+        tr td:first-child {
+            background: linear-gradient(to right, #f8f5f5ff, #f5f2f2ff); 
+        }
 
-    .delete {
-      background: #f44336;
-      color: #fff;
-      &:hover { background: #d32f2f; }
-    }
+        th {
+            background: #fffafaff; 
+            font-weight: 600;
+        }
 
-    .save {
-      background: #4caf50;
-      color: #fff;
-      &:hover { background: #388e3c; }
-    }
+        tr:hover {
+            background: #f5bdadff; 
+        }
 
-    .cancel {
-      background: #9e9e9e;
-      color: #fff;
-      &:hover { background: #757575; }
-    }
+        tr.editing {
+            background: #fbc1b1ff; /* Nền hồng nhạt khi chỉnh sửa */
+        }
 
-    .confirm {
-      background: #f44336;
-      color: #fff;
-      &:hover { background: #d32f2f; }
-    }
+        input {
+            padding: 0.4rem 0.6rem;
+            border: 1px solid #800f0fff;
+            border-radius: 6px;
+        }
 
-    .confirm-text {
-      margin-right: 0.5rem;
-      font-weight: 500;
-      color: #444;
+        /* Tinh chỉnh màu các nút trong bảng */
+        button {
+            margin-right: 0.5rem;
+            padding: 0.4rem 0.8rem;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            font-weight: 500;
+            transition: 0.3s ease;
+            color: #fffefeff; 
+        }
+
+        .edit {
+            background: #2196f3;
+            &:hover { background: #1976d2; }
+        }
+
+        .delete, .confirm {
+            background: #f44336;
+            &:hover { background: #d32f2f; }
+        }
+
+        .save {
+            background: #4caf50;
+            &:hover { background: #388e3c; }
+        }
+
+        .cancel {
+            background: #dcd7d7ff;
+            &:hover { background: #757575; }
+        }
+
+        .confirm-text {
+            margin-right: 0.5rem;
+            font-weight: 500;
+            color: #444;
+        }
     }
-  }
 `;
