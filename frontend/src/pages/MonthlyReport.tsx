@@ -5,7 +5,7 @@ import { getBudgetsByMonth } from "../api/budgetApi";
 import { getCategories } from "../api/categoryApi";
 import styled from "styled-components";
 
-//Khai báo kiểu dữ liệu
+// Khai báo kiểu dữ liệu
 interface Transaction {
   _id: string;
   amount: number;
