@@ -1,5 +1,5 @@
 import type { ReactElement } from 'react'
-import { dashboard, expenses, transactions, trend, categories } from '../utils/Icons'
+import { dashboard, expenses, transactions, categories } from '../utils/Icons'
 
 interface MenuItem {
     id: number
@@ -16,24 +16,6 @@ export const menuItems: MenuItem[] = [
         link: '/dashboard'
     },
     {
-        id: 2,
-        title: 'Chi tiêu tháng',
-        icon: transactions,
-        link: '/dashboard'
-    },
-    {
-        id: 3,
-        title: 'Thu nhập',
-        icon: trend,
-        link: '/dashboard'
-    },
-    {
-        id: 4,
-        title: 'Chi tiêu',
-        icon: expenses,
-        link: '/dashboard'
-    },
-    {
         id: 5,
         title: 'Danh mục chi tiêu',
         icon: categories,   
@@ -44,5 +26,17 @@ export const menuItems: MenuItem[] = [
         title: 'Quản lý khoản chi',
         icon: expenses,
         link: '/expenses'
-    }
+    },
+    {
+        id: 7,
+        title: 'Sổ chi tiêu tháng',
+        icon: transactions,
+        link: '/monthly-report'
+    },
+    {
+        id: 8,
+        title: 'Quản lý định mức chi tiêu',
+        icon: transactions,
+        link: '/budgets'
+    },
 ]

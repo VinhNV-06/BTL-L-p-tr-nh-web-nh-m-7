@@ -18,7 +18,10 @@ interface Expense {
   amount: number;
   description: string;
   date: string;
-  category: string;
+  category: {
+    _id: string;
+    name: string;
+  };
 }
 
 interface Category {
@@ -37,7 +40,7 @@ const ExpenseManager: React.FC = () => {
     amount: "",
     description: "",
     date: "",
-    category: "",
+    categoryId: "", 
   });
   const [editingId, setEditingId] = useState<string | null>(null);
   const [showEditModal, setShowEditModal] = useState(false);
@@ -65,12 +68,15 @@ const ExpenseManager: React.FC = () => {
 
   const handleAdd = async () => {
     try {
+      const d = new Date(form.date);
       const res = await addExpense({
         ...form,
         amount: Number(form.amount),
+        month: d.getMonth() + 1,
+        year: d.getFullYear(),
       });
       setExpenses([...expenses, res.data]);
-      setForm({ amount: "", description: "", date: "", category: "" });
+      setForm({ amount: "", description: "", date: "", categoryId: "" });
       toast.success("Thêm khoản chi thành công");
     } catch (err: unknown) {
       const error = err as AxiosError<ApiErrorResponse>;
@@ -78,16 +84,20 @@ const ExpenseManager: React.FC = () => {
     }
   };
 
+
   const handleUpdate = async (id: string) => {
     try {
+      const d = new Date(form.date);
       const res = await updateExpense(id, {
         ...form,
         amount: Number(form.amount),
+        month: d.getMonth() + 1,
+        year: d.getFullYear(),
       });
       setExpenses(expenses.map((e) => (e._id === id ? res.data : e)));
       setEditingId(null);
       setShowEditModal(false);
-      setForm({ amount: "", description: "", date: "", category: "" });
+      setForm({ amount: "", description: "", date: "", categoryId: "" });
       toast.success("Cập nhật thành công");
     } catch (err: unknown) {
       const error = err as AxiosError<ApiErrorResponse>;
@@ -134,7 +144,11 @@ const ExpenseManager: React.FC = () => {
           value={form.date}
           onChange={handleChange}
         />
-        <select name="category" value={form.category} onChange={handleChange}>
+        <select
+          name="categoryId"
+          value={form.categoryId}
+          onChange={handleChange}
+        >
           <option value="">-- Chọn danh mục --</option>
           {categories.map((c) => (
             <option key={c._id} value={c._id}>
@@ -165,9 +179,7 @@ const ExpenseManager: React.FC = () => {
               <td>{e.description}</td>
               <td>{formatAmount(e.amount)}</td>
               <td>{dateFormat(e.date)}</td>
-              <td>
-                {categories.find((c) => c._id === e.category)?.name || "Khác"}
-              </td>
+              <td>{e.category?.name || "Khác"}</td>
               <td>
                 <button
                   className="edit"
@@ -177,7 +189,7 @@ const ExpenseManager: React.FC = () => {
                       amount: e.amount.toString(),
                       description: e.description,
                       date: e.date.slice(0, 10),
-                      category: e.category,
+                      categoryId: e.category._id,
                     });
                     setShowEditModal(true);
                   }}
@@ -220,8 +232,8 @@ const ExpenseManager: React.FC = () => {
               onChange={handleChange}
             />
             <select
-              name="category"
-              value={form.category}
+              name="categoryId"
+              value={form.categoryId}
               onChange={handleChange}
             >
               <option value="">-- Chọn danh mục --</option>
@@ -254,6 +266,7 @@ const ExpenseStyled = styled.div`
 
   h2 {
     margin-bottom: 1rem;
+    color: #333;
   }
 
   .form {

@@ -7,10 +7,10 @@ import { MainLayout } from "../styles/Layouts";
 import Orb from "../Components/Orb/Orb";
 import Navigation from "../Components/Navigation/Navigation";
 import Dashboard from "../Components/Dashboard/Dashboard";
-import Income from "../Components/Income/Income";
-import Expenses from "../Components/Expenses/Expenses";
 import CategoryManager from "./CategoryManager";
 import ExpensesManager from "./ExpenseManager";
+import MonthlyReport from "./MonthlyReport";
+import BudgetManager from "./BudgetManager";
 
 import { useGlobalContext } from "../context/useGlobalContext";
 
@@ -25,16 +25,14 @@ const Home: React.FC = () => {
     switch (active) {
       case 1:
         return <Dashboard />;
-      case 2:
-        return <Dashboard />;
-      case 3:
-        return <Income />;
-      case 4:
-        return <Expenses />;
       case 5:
         return <CategoryManager />; 
       case 6:
         return <ExpensesManager />;
+      case 7:
+        return <MonthlyReport />;
+      case 8:
+        return <BudgetManager />;
       default:
         return <Dashboard />;
     }
