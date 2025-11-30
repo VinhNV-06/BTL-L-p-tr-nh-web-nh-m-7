@@ -13,7 +13,7 @@ const BudgetSchema = new mongoose.Schema(
       min: 0,
     },
     month: {
-      type: Number, // 1-12
+      type: Number,
       required: true,
     },
     year: {

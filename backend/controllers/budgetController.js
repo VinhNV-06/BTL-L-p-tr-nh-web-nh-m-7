@@ -83,27 +83,3 @@ exports.deleteBudget = async (req, res) => {
   }
 };
 
-// Kiểm tra chi tiêu so với định mức
-exports.checkBudgetStatus = async (req, res) => {
-  const { categoryId, month, year } = req.params;
-
-  try {
-    const budget = await Budget.findOne({ category: categoryId, month, year });
-    if (!budget) {
-      return res.status(404).json({ message: "Chưa thiết lập định mức cho danh mục này" });
-    }
-
-    // Tính tổng chi phí theo danh mục trong tháng/năm
-    const expenses = await Expense.find({ category: categoryId, month, year });
-    const totalSpent = expenses.reduce((acc, e) => acc + e.amount, 0);
-
-    res.status(200).json({
-      budget,
-      totalSpent,
-      remaining: budget.limit - totalSpent,
-      exceeded: totalSpent > budget.limit,
-    });
-  } catch (error) {
-    res.status(500).json({ message: "Server Error" });
-  }
-};

@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from "react";
 import styled from "styled-components";
+import { createPortal } from "react-dom";   // ✅ thêm Portal
 import BudgetForm from "../Components/Budget/BudgetForm";
-import { getBudgetsByMonth, deleteBudget } from "../api/budgetApi";
+import { getBudgetsByMonth, deleteBudget, updateBudget } from "../api/budgetApi";
 import type { Budget } from "../api/budgetApi";
 
 const BudgetManager: React.FC = () => {
@@ -10,6 +11,10 @@ const BudgetManager: React.FC = () => {
   const [error, setError] = useState("");
   const [selectedMonth, setSelectedMonth] = useState(new Date().getMonth() + 1);
   const [selectedYear, setSelectedYear] = useState(new Date().getFullYear());
+
+  // Modal state
+  const [showModal, setShowModal] = useState(false);
+  const [editingBudget, setEditingBudget] = useState<Budget | null>(null);
 
   useEffect(() => {
     fetchBudgets();
@@ -40,6 +45,31 @@ const BudgetManager: React.FC = () => {
       const errorMessage =
         err instanceof Error ? err.message : "Không thể xóa định mức";
       alert(errorMessage);
+    }
+  };
+
+  const handleUpdateClick = (budget: Budget) => {
+    setEditingBudget(budget);
+    setShowModal(true);
+  };
+
+  const handleUpdateSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!editingBudget) return;
+
+    try {
+      const res = await updateBudget(editingBudget._id, {
+        limit: editingBudget.limit,
+        month: editingBudget.month,
+        year: editingBudget.year,
+      });
+      setBudgets((prev) =>
+        prev.map((b) => (b._id === editingBudget._id ? res.data : b))
+      );
+      setShowModal(false);
+      setEditingBudget(null);
+    } catch (err) {
+      alert("Không thể cập nhật định mức");
     }
   };
 
@@ -121,6 +151,12 @@ const BudgetManager: React.FC = () => {
                 </div>
                 <div className="actions">
                   <button
+                    className="update-btn"
+                    onClick={() => handleUpdateClick(budget)}
+                  >
+                    ✏️ Sửa
+                  </button>
+                  <button
                     className="delete-btn"
                     onClick={() => handleDelete(budget._id)}
                   >
@@ -132,15 +168,48 @@ const BudgetManager: React.FC = () => {
           </BudgetList>
         </ListSection>
       </ContentWrapper>
+
+      {/* ✅ Modal render bằng Portal */}
+      {showModal && editingBudget &&
+        createPortal(
+          <ModalOverlay>
+            <ModalContent>
+              <h3>Cập nhật hạn mức</h3>
+              <form onSubmit={handleUpdateSubmit}>
+                <label>
+                  Hạn mức:
+                  <input
+                    type="number"
+                    value={editingBudget.limit}
+                    onChange={(e) =>
+                      setEditingBudget({
+                        ...editingBudget,
+                        limit: Number(e.target.value),
+                      })
+                    }
+                  />
+                </label>
+                <div className="modal-actions">
+                  <button type="submit" className="save-btn">💾 Lưu</button>
+                  <button type="button" className="cancel-btn" onClick={() => setShowModal(false)}>❌ Hủy</button>
+                </div>
+              </form>
+            </ModalContent>
+          </ModalOverlay>,
+          document.body
+        )
+      }
     </BudgetManagerStyled>
   );
 };
 
 export default BudgetManager;
 
-// Styled-components
 const BudgetManagerStyled = styled.div`
   padding: 2rem;
+  position: relative;
+  z-index: 1;
+
   h1 {
     font-size: 2rem;
     margin-bottom: 2rem;
@@ -152,6 +221,7 @@ const ContentWrapper = styled.div`
   display: grid;
   grid-template-columns: 1fr 1.5fr;
   gap: 2rem;
+
   @media (max-width: 968px) {
     grid-template-columns: 1fr;
   }
@@ -178,6 +248,7 @@ const FilterSection = styled.div`
   display: flex;
   gap: 1rem;
   margin-bottom: 1.5rem;
+
   select {
     padding: 0.5rem 1rem;
     border-radius: 5px;
@@ -188,6 +259,7 @@ const FilterSection = styled.div`
     font-size: 1rem;
     color: rgba(34, 34, 96, 0.9);
     outline: none;
+
     &:focus {
       border-color: var(--color-accent);
     }
@@ -209,6 +281,7 @@ const BudgetItem = styled.div`
   justify-content: space-between;
   align-items: center;
   transition: all 0.3s ease;
+
   &:hover {
     transform: translateY(-3px);
     box-shadow: 0px 4px 20px rgba(0, 0, 0, 0.1);
@@ -239,16 +312,32 @@ const BudgetItem = styled.div`
 
   .actions {
     display: flex;
-    gap: 0.5rem;
+    gap: 0.4rem;
+
+    .update-btn,
+    .delete-btn {
+      padding: 0.35rem 0.7rem;
+      font-size: 0.85rem;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      font-weight: 500;
+      transition: background 0.2s ease;
+    }
+
+    .update-btn {
+      background: #ffa502;
+      color: white;
+
+      &:hover {
+        background: #e67e22;
+      }
+    }
 
     .delete-btn {
-      padding: 0.5rem 1rem;
       background: #ff4757;
       color: white;
-      border: none;
-      border-radius: 8px;
-      cursor: pointer;
-      font-weight: 600;
+
       &:hover {
         background: #ee2f3a;
       }
@@ -263,7 +352,7 @@ const ErrorMessage = styled.div`
   border-radius: 8px;
   color: #c33;
   margin-bottom: 1rem;
-`
+`;
 
 const LoadingMessage = styled.div`
   padding: 1rem;
@@ -278,4 +367,89 @@ const EmptyState = styled.div`
   font-size: 1.1rem;
   background: #fcf6f9;
   border-radius: 15px;
+`;
+
+/* ✅ Modal styles FIXED */
+const ModalOverlay = styled.div`
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  z-index: 999;
+  background: rgba(0, 0, 0, 0.4);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+`;
+
+const ModalContent = styled.div`
+  background: #fff;
+  padding: 2rem;
+  border-radius: 12px;
+  width: 350px;
+  max-height: 90vh;
+  overflow-y: auto;
+  box-shadow: 0px 4px 20px rgba(0, 0, 0, 0.2);
+  z-index: 1000;
+
+  h3 {
+    margin-bottom: 1rem;
+    font-size: 1.2rem;
+    color: rgba(34, 34, 96, 0.9);
+  }
+
+  form {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+  }
+
+  label {
+    font-size: 0.9rem;
+    color: rgba(34, 34, 96, 0.9);
+    display: flex;
+    flex-direction: column;
+    gap: 0.3rem;
+  }
+
+  input {
+    width: 100%;
+    padding: 0.4rem 0.6rem;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    font-size: 0.95rem;
+  }
+
+  .modal-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 0.5rem;
+    margin-top: 1rem;
+  }
+
+  .save-btn,
+  .cancel-btn {
+    padding: 0.4rem 0.8rem;
+    font-size: 0.85rem;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: 500;
+  }
+
+  .save-btn {
+    background: #2ecc71;
+    color: white;
+
+    &:hover {
+      background: #27ae60;
+    }
+  }
+
+  .cancel-btn {
+    background: #e74c3c;
+    color: white;
+
+    &:hover {
+      background: #c0392b;
+    }
+  }
 `;

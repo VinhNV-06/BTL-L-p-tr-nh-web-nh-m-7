@@ -16,7 +16,7 @@ export const getBudgetsByMonth = (month: number, year: number) => {
 
 // Thêm định mức mới
 export const addBudget = (budget: {
-  categoryId: string;   // 🔗 ObjectId của Category
+  categoryId: string;   
   limit: number;
   month: number;
   year: number;
@@ -41,7 +41,6 @@ export const deleteBudget = (id: string) => {
   return axios.delete(`${API_URL}/budgets/${id}`);
 };
 
-// Kiểu dữ liệu Budget (cho frontend)
 export interface Budget {
   _id: string;
   category: {
