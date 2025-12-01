@@ -10,6 +10,20 @@ exports.addBudget = async (req, res) => {
       return res.status(400).json({ message: "Thiếu dữ liệu cần thiết" });
     }
 
+    // 🔎 Kiểm tra trùng: cùng danh mục, cùng tháng, cùng năm
+    const existingBudget = await Budget.findOne({
+      category: categoryId,
+      month,
+      year,
+    });
+
+    if (existingBudget) {
+      return res.status(409).json({
+        message: "Định mức cho danh mục này trong tháng đã tồn tại.",
+        budgetId: existingBudget._id,
+      });
+    }
+
     const budget = new Budget({
       category: categoryId,
       limit,
@@ -18,10 +32,10 @@ exports.addBudget = async (req, res) => {
     });
 
     const savedBudget = await budget.save();
-    res.status(201).json(savedBudget);
+    return res.status(201).json(savedBudget);
   } catch (error) {
     console.error(error);
-    res.status(500).json({ message: "Server Error" });
+    return res.status(500).json({ message: "Server Error" });
   }
 };
 
