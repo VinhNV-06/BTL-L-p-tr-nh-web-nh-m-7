@@ -23,7 +23,16 @@ router.post("/register", async (req, res) => {
     const newUser = new User({ name, email, password: hashed });
     await newUser.save();
 
-    res.json({ message: "Đăng ký thành công" });
+    // ✅ sign token với { id: newUser._id }
+    const token = jwt.sign({ id: newUser._id }, process.env.JWT_SECRET, {
+      expiresIn: "7d",
+    });
+
+    res.json({
+      message: "Đăng ký thành công",
+      token,
+      user: { id: newUser._id, name: newUser.name, email: newUser.email },
+    });
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
@@ -41,6 +50,7 @@ router.post("/login", async (req, res) => {
     const valid = await bcrypt.compare(password, user.password);
     if (!valid) return res.status(400).json({ message: "Sai mật khẩu" });
 
+    // ✅ sign token với { id: user._id }
     const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, {
       expiresIn: "7d",
     });
@@ -54,6 +64,7 @@ router.post("/login", async (req, res) => {
     res.status(500).json({ error: err.message });
   }
 });
+
 
 // Đăng xuất
 router.post("/logout", async (req, res) => {

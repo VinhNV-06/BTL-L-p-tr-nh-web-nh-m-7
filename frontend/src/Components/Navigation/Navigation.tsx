@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import styled from 'styled-components';
 import avatar from '../../img/avatar.png';
 import { signout } from '../../utils/Icons';
@@ -11,19 +11,50 @@ interface NavigationProps {
     setActive: (id: number) => void;
 }
 
+interface User {
+    _id: string;
+    name: string;
+    email: string;
+}
+
 const Navigation: React.FC<NavigationProps> = ({ active, setActive }) => {
     const navigate = useNavigate();
+    const [user, setUser] = useState<User | null>(null);
+
+    useEffect(() => {
+        const fetchUser = async () => {
+            const token = localStorage.getItem("token");
+            if (!token) return;
+
+            try {
+                const res = await fetch("http://localhost:5000/api/v1/me", {
+                    headers: { Authorization: `Bearer ${token}` },
+                });
+                if (res.ok) {
+                    const data = await res.json();
+                    setUser(data);
+                } else {
+                    setUser(null);
+                }
+            } catch (err) {
+                console.error("Lỗi khi lấy thông tin user:", err);
+                setUser(null);
+            }
+        };
+
+        fetchUser();
+    }, []);
 
     const handleLogout = async () => {
         try {
             await logout();
             localStorage.removeItem("token");
+            localStorage.removeItem("user");
             navigate("/", { replace: true });
         } catch (error) {
             console.error("Logout error:", error);
         }
     };
-
 
     return (
         <NavStyled>
@@ -31,8 +62,8 @@ const Navigation: React.FC<NavigationProps> = ({ active, setActive }) => {
             <div className="user-con">
                 <img src={avatar} alt="Avatar" />
                 <div className="text">
-                    <h2>Nguyen van A</h2>
-                    <p>Your money</p>
+                    <h2>{user ? user.name : "Khách"}</h2>
+                    <p>{user ? user.email : ""}</p>
                 </div>
             </div>
 
@@ -59,7 +90,6 @@ const Navigation: React.FC<NavigationProps> = ({ active, setActive }) => {
         </NavStyled>
     );
 };
-
 
 const NavStyled = styled.nav`
     padding: 2rem 1.5rem;

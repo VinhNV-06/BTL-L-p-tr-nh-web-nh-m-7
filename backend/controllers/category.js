@@ -20,7 +20,20 @@ exports.addCategory = async (req, res) => {
 // Lấy danh sách danh mục
 exports.getCategories = async (req, res) => {
   try {
-    const categories = await Category.find().sort({ createdAt: -1 });
+    let categories = await Category.find().sort({ createdAt: -1 });
+
+    // Nếu chưa có danh mục nào, tạo danh mục mặc định
+    if (categories.length === 0) {
+      const defaultCategories = [
+        { name: "Đồ ăn" },
+        { name: "Di chuyển" },
+        { name: "Giải trí" },
+        { name: "Học tập" },
+        { name: "Mua sắm" },
+      ];
+      categories = await Category.insertMany(defaultCategories);
+    }
+
     res.status(200).json(categories);
   } catch (error) {
     res.status(500).json({ message: "Server Error" });

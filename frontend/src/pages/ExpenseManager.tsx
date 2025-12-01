@@ -40,6 +40,7 @@ const ExpenseManager: React.FC = () => {
     category: "",
   });
   const [editingId, setEditingId] = useState<string | null>(null);
+  const [showEditModal, setShowEditModal] = useState(false);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -85,6 +86,7 @@ const ExpenseManager: React.FC = () => {
       });
       setExpenses(expenses.map((e) => (e._id === id ? res.data : e)));
       setEditingId(null);
+      setShowEditModal(false);
       setForm({ amount: "", description: "", date: "", category: "" });
       toast.success("Cập nhật thành công");
     } catch (err: unknown) {
@@ -104,9 +106,13 @@ const ExpenseManager: React.FC = () => {
     }
   };
 
+  // ✅ Tính tổng số tiền đã chi
+  const totalAmount = expenses.reduce((sum, e) => sum + e.amount, 0);
+
   return (
     <ExpenseStyled>
       <h2>Quản lý khoản chi</h2>
+      {/* Form thêm mới */}
       <div className="form">
         <input
           name="amount"
@@ -136,14 +142,19 @@ const ExpenseManager: React.FC = () => {
             </option>
           ))}
         </select>
-        {editingId ? (
-          <button onClick={() => handleUpdate(editingId)}>💾 Lưu</button>
-        ) : (
-          <button onClick={handleAdd}>➕ Thêm</button>
-        )}
+        <button onClick={handleAdd}>➕ Thêm</button>
       </div>
+<<<<<<< HEAD
       <div className="table-wrapper">
          <table>
+=======
+
+      {/* ✅ Tổng số tiền đã chi */}
+      <p className="total">Tổng số tiền đã chi: {formatAmount(totalAmount)}</p>
+
+      {/* Bảng danh sách */}
+      <table>
+>>>>>>> main
         <thead>
           <tr>
             <th>Mô tả</th>
@@ -160,7 +171,7 @@ const ExpenseManager: React.FC = () => {
               <td>{formatAmount(e.amount)}</td>
               <td>{dateFormat(e.date)}</td>
               <td>
-                {categories.find((c) => c._id === e.category)?.name || "N/A"}
+                {categories.find((c) => c._id === e.category)?.name || "Khác"}
               </td>
               <td>
                 <button
@@ -173,6 +184,7 @@ const ExpenseManager: React.FC = () => {
                       date: e.date.slice(0, 10),
                       category: e.category,
                     });
+                    setShowEditModal(true);
                   }}
                 >
                   ✏️ Sửa
@@ -188,7 +200,54 @@ const ExpenseManager: React.FC = () => {
           ))}
         </tbody>
       </table>
+<<<<<<< HEAD
       </div>
+=======
+
+      {/* Modal chỉnh sửa */}
+      {showEditModal && (
+        <div className="modal">
+          <div className="modal-content">
+            <h3>Chỉnh sửa khoản chi</h3>
+            <input
+              name="amount"
+              type="number"
+              value={form.amount}
+              onChange={handleChange}
+            />
+            <input
+              name="description"
+              type="text"
+              value={form.description}
+              onChange={handleChange}
+            />
+            <input
+              name="date"
+              type="date"
+              value={form.date}
+              onChange={handleChange}
+            />
+            <select
+              name="category"
+              value={form.category}
+              onChange={handleChange}
+            >
+              <option value="">-- Chọn danh mục --</option>
+              {categories.map((c) => (
+                <option key={c._id} value={c._id}>
+                  {c.name}
+                </option>
+              ))}
+            </select>
+            <div className="modal-buttons">
+              <button onClick={() => handleUpdate(editingId!)}>💾 Lưu</button>
+              <button onClick={() => setShowEditModal(false)}>❌ Hủy</button>
+            </div>
+          </div>
+        </div>
+      )}
+
+>>>>>>> main
       <ToastContainer position="top-right" autoClose={3000} />
     </ExpenseStyled>
   );
@@ -317,5 +376,92 @@ const ExpenseStyled = styled.div`
         transform: scale(1.1);
       }
     }
+  }
+
+  .modal {
+    position: fixed;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    background: rgba(0,0,0,0.5);
+    display: flex; align-items: center; justify-content: center;
+    z-index: 1000;
+  }
+
+  .modal-content {
+    background: #fff;
+    padding: 2rem;
+    border-radius: 16px;
+    width: 450px;
+    box-shadow: 0px 8px 20px rgba(0,0,0,0.2);
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    animation: fadeIn 0.3s ease;
+  }
+
+  .modal-content h3 {
+    margin-bottom: 0.5rem;
+    font-size: 1.4rem;
+    font-weight: 600;
+    color: #333;
+    text-align: center;
+  }
+
+  .modal-content input,
+  .modal-content select {
+    padding: 0.7rem 1rem;
+    border: 1.5px solid #ddd;
+    border-radius: 10px;
+    font-size: 1rem;
+    transition: border-color 0.2s ease;
+  }
+
+  .modal-content input:focus,
+  .modal-content select:focus {
+    border-color: #4caf50;
+    outline: none;
+  }
+
+  .modal-buttons {
+    display: flex;
+    justify-content: flex-end;
+    gap: 1rem;
+    margin-top: 1rem;
+  }
+
+  .modal-buttons button {
+    padding: 0.6rem 1.2rem;
+    border: none;
+    border-radius: 8px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: 0.3s ease;
+    color: #fff;
+  }
+
+  .modal-buttons button:first-child {
+    background: #4caf50;
+  }
+  .modal-buttons button:first-child:hover {
+    background: #388e3c;
+  }
+
+  .modal-buttons button:last-child {
+    background: #9e9e9e;
+  }
+  .modal-buttons button:last-child:hover {
+    background: #757575;
+  }
+
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(-10px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  .total {
+    font-size: 1.2rem;
+    font-weight: 600;
+    color: #d32f2f;
+    margin: 1rem 0;
+    text-align: right; /* hoặc left tùy bạn muốn */
   }
 `;
