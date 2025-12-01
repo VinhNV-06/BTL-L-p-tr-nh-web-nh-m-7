@@ -5,7 +5,6 @@ import { getBudgetsByMonth } from "../api/budgetApi";
 import { getCategories } from "../api/categoryApi";
 import styled from "styled-components";
 
-// Khai báo kiểu dữ liệu
 interface Transaction {
   _id: string;
   amount: number;
@@ -183,12 +182,9 @@ const MonthlyReport: React.FC = () => {
 
 export default MonthlyReport;
 
-// ✅ Styled-components
 const ReportWrapper = styled.div`
   padding: 2rem;
-  background: #fcf6f9;
   border-radius: 16px;
-  box-shadow: 0px 1px 15px rgba(0, 0, 0, 0.06);
 
   h2 {
     margin-bottom: 1rem;

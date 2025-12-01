@@ -92,7 +92,7 @@ const Navigation: React.FC<NavigationProps> = ({ active, setActive }) => {
 };
 
 const NavStyled = styled.nav`
-    padding: 2.5rem 2rem 5rem 2rem; /* Tăng padding để rộng rãi hơn */
+    padding: 1.5rem 2rem 5rem 1.5rem; /* Tăng padding để rộng rãi hơn */
     width: 374px;
     height: 100%;
     box-sizing: border-box;
@@ -106,7 +106,7 @@ const NavStyled = styled.nav`
     display: flex;
     flex-direction: column;
     justify-content: flex-start;
-    gap: 3rem; /* Tăng khoảng cách giữa các khối */
+    gap: 1.5rem; /* Tăng khoảng cách giữa các khối */
 
     .user-con {
         height: 100px;
