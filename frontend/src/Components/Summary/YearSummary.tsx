@@ -1,5 +1,6 @@
 import React from "react";
 import { YearlyStats } from "../../api/statsApi";
+import styled from "styled-components";
 
 interface Props {
   stats: YearlyStats;
@@ -10,48 +11,71 @@ const YearSummary: React.FC<Props> = ({ stats }) => {
   const monthsOver = months.filter((m) => m.over > 0).length;
   const percentOver = Math.round((monthsOver / months.length) * 100);
 
-  // ✅ Tạo một component nhỏ cho card để tái sử dụng
-  const SummaryCard: React.FC<{ title: string; value: string; color?: string }> = ({
-    title,
-    value,
-    color = "inherit",
-  }) => (
-    <div
-      style={{
-        flex: 1,
-        padding: "20px",
-        background: "#f5f5f5",
-        borderRadius: "8px",
-        textAlign: "center",
-      }}
-    >
-      <h3>{title}</h3>
-      <p style={{ color, fontWeight: "bold", fontSize: "1.2em" }}>{value}</p>
-    </div>
-  );
+  const remaining = totals.budget - totals.spent;
 
   return (
-    <div style={{ display: "flex", gap: "20px", marginTop: "20px" }}>
-      <SummaryCard
-        title="Tổng chi tiêu"
-        value={totals.spent.toLocaleString("vi-VN") + " ₫"}
-      />
-      <SummaryCard
-        title="Tổng định mức"
-        value={totals.budget.toLocaleString("vi-VN") + " ₫"}
-      />
-      <SummaryCard
-        title="Tổng vượt định mức"
-        value={totals.over.toLocaleString("vi-VN") + " ₫"}
-        color="red"
-      />
-      <SummaryCard
-        title="Tỷ lệ vượt định mức"
-        value={`${monthsOver}/${months.length} tháng (${percentOver}%)`}
-        color={percentOver > 50 ? "red" : "green"} // ✅ nếu vượt nhiều thì đỏ, ít thì xanh
-      />
-    </div>
+    <SummaryWrapper>
+      <SummaryCard>
+        <h3>Tổng chi tiêu</h3>
+        <p>{totals.spent.toLocaleString("vi-VN")} ₫</p>
+      </SummaryCard>
+      <SummaryCard>
+        <h3>Tổng định mức</h3>
+        <p>{totals.budget.toLocaleString("vi-VN")} ₫</p>
+      </SummaryCard>
+      <SummaryCard highlight="red">
+        <h3>Tổng vượt định mức</h3>
+        <p>{totals.over.toLocaleString("vi-VN")} ₫</p>
+      </SummaryCard>
+      <SummaryCard highlight={remaining >= 0 ? "green" : "red"}>
+        <h3>Tiền còn dư</h3>
+        <p>{remaining.toLocaleString("vi-VN")} ₫</p>
+      </SummaryCard>
+      <SummaryCard highlight={percentOver > 50 ? "red" : "green"}>
+        <h3>Tỷ lệ vượt định mức</h3>
+        <p>{monthsOver}/{months.length} tháng ({percentOver}%)</p>
+      </SummaryCard>
+      
+    </SummaryWrapper>
   );
 };
 
 export default YearSummary;
+
+// ✅ Styled-components
+const SummaryWrapper = styled.div`
+  display: flex;
+  gap: 20px;
+  margin-top: 20px;
+  flex-wrap: wrap;
+`;
+
+const SummaryCard = styled.div<{ highlight?: string }>`
+  flex: 1;
+  min-width: 180px;
+  padding: 20px;
+  background: #ffffff;
+  border-radius: 12px;
+  text-align: center;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+
+  h3 {
+    margin: 0;
+    font-size: 1rem;
+    font-weight: 600;
+    color: #555;
+  }
+
+  p {
+    margin-top: 8px;
+    font-size: 1.3rem;
+    font-weight: 700;
+    color: ${({ highlight }) => highlight || "#333"};
+  }
+
+  &:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.12);
+  }
+`;
