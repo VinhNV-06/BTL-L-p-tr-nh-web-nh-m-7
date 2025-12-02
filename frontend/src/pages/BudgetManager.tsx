@@ -12,9 +12,11 @@ const BudgetManager: React.FC = () => {
   const [selectedMonth, setSelectedMonth] = useState(new Date().getMonth() + 1);
   const [selectedYear, setSelectedYear] = useState(new Date().getFullYear());
 
-  // Modal state
   const [showModal, setShowModal] = useState(false);
   const [editingBudget, setEditingBudget] = useState<Budget | null>(null);
+
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [deletingId, setDeletingId] = useState<string | null>(null);
 
   useEffect(() => {
     fetchBudgets();
@@ -35,16 +37,20 @@ const BudgetManager: React.FC = () => {
     }
   };
 
-  const handleDelete = async (id: string) => {
-    if (!window.confirm("Bạn có chắc muốn xóa định mức này?")) return;
+  const handleDeleteClick = (id: string) => {
+    setDeletingId(id);
+    setShowDeleteModal(true);
+  };
 
+  const confirmDelete = async () => {
+    if (!deletingId) return;
     try {
-      await deleteBudget(id);
-      setBudgets((prev) => prev.filter((b) => b._id !== id));
+      await deleteBudget(deletingId);
+      setBudgets((prev) => prev.filter((b) => b._id !== deletingId));
+      setDeletingId(null);
+      setShowDeleteModal(false);
     } catch (err) {
-      const errorMessage =
-        err instanceof Error ? err.message : "Không thể xóa định mức";
-      alert(errorMessage);
+      alert("Không thể xóa định mức");
     }
   };
 
@@ -154,13 +160,13 @@ const BudgetManager: React.FC = () => {
                     className="update-btn"
                     onClick={() => handleUpdateClick(budget)}
                   >
-                    ✏️ Sửa
+                     Sửa
                   </button>
                   <button
                     className="delete-btn"
-                    onClick={() => handleDelete(budget._id)}
+                    onClick={() => handleDeleteClick(budget._id)}
                   >
-                    🗑️ Xóa
+                     Xóa
                   </button>
                 </div>
               </BudgetItem>
@@ -169,7 +175,7 @@ const BudgetManager: React.FC = () => {
         </ListSection>
       </ContentWrapper>
 
-      {/* ✅ Modal render bằng Portal */}
+      {/* ✅ Modal cập nhật */}
       {showModal && editingBudget &&
         createPortal(
           <ModalOverlay>
@@ -190,10 +196,27 @@ const BudgetManager: React.FC = () => {
                   />
                 </label>
                 <div className="modal-actions">
-                  <button type="submit" className="save-btn">💾 Lưu</button>
-                  <button type="button" className="cancel-btn" onClick={() => setShowModal(false)}>❌ Hủy</button>
+                  <button type="submit" className="save-btn"> Lưu </button>
+                  <button type="button" className="cancel-btn" onClick={() => setShowModal(false)}> Hủy </button>
                 </div>
               </form>
+            </ModalContent>
+          </ModalOverlay>,
+          document.body
+        )
+      }
+
+      {/* Modal xác nhận xóa */}
+      {showDeleteModal &&
+        createPortal(
+          <ModalOverlay>
+            <ModalContent>
+              <h3>Xác nhận xóa</h3>
+              <p>Bạn có chắc chắn muốn xóa định mức này?</p>
+              <div className="modal-actions">
+                <button className="save-btn" onClick={confirmDelete}>Đồng ý</button>
+                <button className="cancel-btn" onClick={() => setShowDeleteModal(false)}>Hủy</button>
+              </div>
             </ModalContent>
           </ModalOverlay>,
           document.body
@@ -370,7 +393,6 @@ const EmptyState = styled.div`
   border-radius: 15px;
 `;
 
-/* ✅ Modal styles FIXED */
 const ModalOverlay = styled.div`
   position: fixed;
   top: 0; left: 0; right: 0; bottom: 0;

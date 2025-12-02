@@ -45,6 +45,9 @@ const ExpenseManager: React.FC = () => {
   const [editingId, setEditingId] = useState<string | null>(null);
   const [showEditModal, setShowEditModal] = useState(false);
 
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [deletingId, setDeletingId] = useState<string | null>(null);
+
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -84,7 +87,6 @@ const ExpenseManager: React.FC = () => {
     }
   };
 
-
   const handleUpdate = async (id: string) => {
     try {
       const d = new Date(form.date);
@@ -105,10 +107,18 @@ const ExpenseManager: React.FC = () => {
     }
   };
 
-  const handleDelete = async (id: string) => {
+  const handleDeleteClick = (id: string) => {
+    setDeletingId(id);
+    setShowDeleteModal(true);
+  };
+
+  const confirmDelete = async () => {
+    if (!deletingId) return;
     try {
-      await deleteExpense(id);
-      setExpenses(expenses.filter((e) => e._id !== id));
+      await deleteExpense(deletingId);
+      setExpenses(expenses.filter((e) => e._id !== deletingId));
+      setDeletingId(null);
+      setShowDeleteModal(false);
       toast.success("Đã xóa khoản chi");
     } catch (err: unknown) {
       const error = err as AxiosError<ApiErrorResponse>;
@@ -116,7 +126,6 @@ const ExpenseManager: React.FC = () => {
     }
   };
 
-  // ✅ Tính tổng số tiền đã chi
   const totalAmount = expenses.reduce((sum, e) => sum + e.amount, 0);
 
   return (
@@ -156,10 +165,10 @@ const ExpenseManager: React.FC = () => {
             </option>
           ))}
         </select>
-        <button onClick={handleAdd}>➕ Thêm</button>
+        <button onClick={handleAdd}> Thêm </button>
       </div>
 
-      {/* ✅ Tổng số tiền đã chi */}
+      {/* Tổng số tiền đã chi */}
       <p className="total">Tổng số tiền đã chi: {formatAmount(totalAmount)}</p>
 
       {/* Bảng danh sách */}
@@ -194,13 +203,13 @@ const ExpenseManager: React.FC = () => {
                     setShowEditModal(true);
                   }}
                 >
-                  ✏️ Sửa
+                  Sửa
                 </button>
                 <button
                   className="delete"
-                  onClick={() => handleDelete(e._id)}
+                  onClick={() => handleDeleteClick(e._id)}
                 >
-                  🗑️ Xóa
+                  Xóa
                 </button>
               </td>
             </tr>
@@ -244,8 +253,22 @@ const ExpenseManager: React.FC = () => {
               ))}
             </select>
             <div className="modal-buttons">
-              <button onClick={() => handleUpdate(editingId!)}>💾 Lưu</button>
-              <button onClick={() => setShowEditModal(false)}>❌ Hủy</button>
+              <button onClick={() => handleUpdate(editingId!)}>Lưu</button>
+              <button onClick={() => setShowEditModal(false)}>Hủy</button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Modal xác nhận xóa */}
+      {showDeleteModal && (
+        <div className="modal">
+          <div className="modal-content">
+            <h3>Xác nhận xóa</h3>
+            <p>Bạn có chắc chắn muốn xóa khoản chi này?</p>
+            <div className="modal-buttons">
+              <button onClick={confirmDelete}>Đồng ý</button>
+              <button onClick={() => setShowDeleteModal(false)}>Hủy</button>
             </div>
           </div>
         </div>
@@ -256,13 +279,13 @@ const ExpenseManager: React.FC = () => {
   );
 };
 
-export default ExpenseManager;
+export default ExpenseManager
 
 const ExpenseStyled = styled.div`
   padding: 2rem;
   background: #fcf6f9;
   border-radius: 16px;
-  box-shadow: 0px 1px 15px rgba(0, 0, 0, 0.06);
+  box-shadow: 0px 1px 15px rgba(0,0,0,0.06);
 
   h2 {
     margin-bottom: 1rem;
@@ -286,16 +309,25 @@ const ExpenseStyled = styled.div`
     button {
       padding: 0.6rem 1.2rem;
       border: none;
-      border-radius: 50px;
+      border-radius: 8px;
       background: #4caf50;
       color: #fff;
       font-weight: 600;
       cursor: pointer;
       transition: 0.3s ease;
+
       &:hover {
         background: #388e3c;
       }
     }
+  }
+
+  .total {
+    font-size: 1.2rem;
+    font-weight: 600;
+    color: #d32f2f;
+    margin: 1rem 0;
+    text-align: right;
   }
 
   table {
@@ -305,8 +337,7 @@ const ExpenseStyled = styled.div`
     border-radius: 12px;
     overflow: hidden;
 
-    th,
-    td {
+    th, td {
       padding: 0.8rem 1rem;
       text-align: left;
       border-bottom: 1px solid #eee;
@@ -324,29 +355,24 @@ const ExpenseStyled = styled.div`
     .edit,
     .delete {
       border: none;
-      border-radius: 50px;
-      padding: 0.4rem 1rem;
-      font-weight: 600;
+      border-radius: 6px;
+      padding: 0.4rem 0.8rem;
+      font-weight: 500;
       cursor: pointer;
-      display: inline-flex;
-      align-items: center;
-      gap: 0.5rem;
+      font-size: 0.9rem;
+      transition: 0.3s ease;
+      color: #fff;
+      margin-right: 0.5rem; /* tạo khoảng cách giữa nút */
     }
 
     .edit {
-      background: #e3f2fd;
-      color: #1976d2;
-      &:hover {
-        background: #bbdefb;
-      }
+      background: #2196f3;
+      &:hover { background: #1976d2; }
     }
 
     .delete {
-      background: #ffebee;
-      color: #d32f2f;
-      &:hover {
-        background: #ffcdd2;
-      }
+      background: #f44336;
+      &:hover { background: #d32f2f; }
     }
   }
 
@@ -379,6 +405,13 @@ const ExpenseStyled = styled.div`
     text-align: center;
   }
 
+  .modal-content p {
+    font-size: 1rem;
+    color: #555;
+    margin-bottom: 1rem;
+    text-align: center;
+  }
+
   .modal-content input,
   .modal-content select {
     padding: 0.7rem 1rem;
@@ -396,7 +429,7 @@ const ExpenseStyled = styled.div`
 
   .modal-buttons {
     display: flex;
-    justify-content: flex-end;
+    justify-content: center;
     gap: 1rem;
     margin-top: 1rem;
   }
@@ -412,28 +445,18 @@ const ExpenseStyled = styled.div`
   }
 
   .modal-buttons button:first-child {
-    background: #4caf50;
-  }
-  .modal-buttons button:first-child:hover {
-    background: #388e3c;
+    background: #4caf50; /* Lưu hoặc Đồng ý */
+    &:hover { background: #388e3c; }
   }
 
   .modal-buttons button:last-child {
-    background: #9e9e9e;
-  }
-  .modal-buttons button:last-child:hover {
-    background: #757575;
+    background: #9e9e9e; /* Hủy */
+    &:hover { background: #757575; }
   }
 
   @keyframes fadeIn {
     from { opacity: 0; transform: translateY(-10px); }
     to { opacity: 1; transform: translateY(0); }
   }
-  .total {
-    font-size: 1.2rem;
-    font-weight: 600;
-    color: #d32f2f;
-    margin: 1rem 0;
-    text-align: right; /* hoặc left tùy bạn muốn */
-  }
 `;
+
