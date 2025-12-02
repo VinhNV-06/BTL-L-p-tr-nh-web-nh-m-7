@@ -1,15 +1,7 @@
 const Expense = require("../models/ExpenseModel");
 const Category = require("../models/CategoryModel");
 
-// Hàm format số tiền
-const formatAmount = (value) => {
-  if (value >= 1_000_000_000) return (value / 1_000_000_000).toFixed(1) + "B";
-  if (value >= 1_000_000) return (value / 1_000_000).toFixed(1) + "M";
-  if (value >= 1_000) return (value / 1_000).toFixed(1) + "K";
-  return value.toString();
-};
-
-// ✅ Thêm chi phí mới
+// Thêm chi phí mới
 exports.addExpense = async (req, res) => {
   const { amount, categoryId, description, date } = req.body;
 
@@ -45,26 +37,21 @@ exports.addExpense = async (req, res) => {
   }
 };
 
-// ✅ Lấy toàn bộ chi phí
+// Lấy toàn bộ chi phí
 exports.getExpense = async (req, res) => {
   try {
     const expenses = await Expense.find()
       .sort({ createdAt: -1 })
       .populate("category", "name");
 
-    const formatted = expenses.map((item) => ({
-      ...item.toObject(),
-      formattedAmount: formatAmount(item.amount),
-    }));
-
-    res.status(200).json(formatted);
+    res.status(200).json(expenses);
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: "Server Error" });
   }
 };
 
-// ✅ Lấy chi phí theo tháng/năm
+// Lấy chi phí theo tháng/năm
 exports.getExpenseByMonthYear = async (req, res) => {
   const { month, year } = req.query;
 
@@ -80,19 +67,14 @@ exports.getExpenseByMonthYear = async (req, res) => {
       .sort({ date: -1 })
       .populate("category", "name");
 
-    const formatted = expenses.map((item) => ({
-      ...item.toObject(),
-      formattedAmount: formatAmount(item.amount),
-    }));
-
-    res.status(200).json(formatted);
+    res.status(200).json(expenses);
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: "Server Error" });
   }
 };
 
-// ✅ Cập nhật chi phí
+// Cập nhật chi phí
 exports.updateExpense = async (req, res) => {
   const { id } = req.params;
   const { amount, categoryId, description, date } = req.body;
@@ -130,7 +112,7 @@ exports.updateExpense = async (req, res) => {
   }
 };
 
-// ✅ Xóa chi phí
+// Xóa chi phí
 exports.deleteExpense = async (req, res) => {
   const { id } = req.params;
 
@@ -146,16 +128,13 @@ exports.deleteExpense = async (req, res) => {
   }
 };
 
-// ✅ Tổng chi phí
+// Tổng chi phí
 exports.getTotalExpense = async (req, res) => {
   try {
     const expenses = await Expense.find();
     const total = expenses.reduce((acc, item) => acc + item.amount, 0);
 
-    res.status(200).json({
-      total,
-      formattedTotal: formatAmount(total),
-    });
+    res.status(200).json({ total });
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: "Server Error" });

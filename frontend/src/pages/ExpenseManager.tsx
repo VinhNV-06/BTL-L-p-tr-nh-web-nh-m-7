@@ -4,12 +4,13 @@ import {
   addExpense,
   updateExpense,
   deleteExpense,
+  getTotalExpense,
 } from "../api/expenseApi";
 import { getCategories } from "../api/categoryApi";
 import { AxiosError } from "axios";
 import styled from "styled-components";
 import { dateFormat } from "../utils/dateFormat";
-import { formatAmount } from "../utils/formatAmount";
+import { formatAmount } from "../utils/formatAmount"; // ✅ dùng frontend format
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
@@ -40,7 +41,7 @@ const ExpenseManager: React.FC = () => {
     amount: "",
     description: "",
     date: "",
-    categoryId: "", 
+    categoryId: "",
   });
   const [editingId, setEditingId] = useState<string | null>(null);
   const [showEditModal, setShowEditModal] = useState(false);
@@ -48,13 +49,21 @@ const ExpenseManager: React.FC = () => {
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [deletingId, setDeletingId] = useState<string | null>(null);
 
+  const [totalExpense, setTotalExpense] = useState<{ total: number }>({
+    total: 0,
+  });
+
   useEffect(() => {
     const fetchData = async () => {
       try {
         const resExpenses = await getExpenses();
         setExpenses(resExpenses.data);
+
         const resCategories = await getCategories();
         setCategories(resCategories.data);
+
+        const resTotal = await getTotalExpense();
+        setTotalExpense(resTotal.data);
       } catch (err: unknown) {
         const error = err as AxiosError<ApiErrorResponse>;
         toast.error(error.response?.data?.message || "Lỗi khi tải dữ liệu");
@@ -71,14 +80,15 @@ const ExpenseManager: React.FC = () => {
 
   const handleAdd = async () => {
     try {
-      const d = new Date(form.date);
       const res = await addExpense({
         ...form,
         amount: Number(form.amount),
-        month: d.getMonth() + 1,
-        year: d.getFullYear(),
       });
       setExpenses([...expenses, res.data]);
+
+      const resTotal = await getTotalExpense();
+      setTotalExpense(resTotal.data);
+
       setForm({ amount: "", description: "", date: "", categoryId: "" });
       toast.success("Thêm khoản chi thành công");
     } catch (err: unknown) {
@@ -89,14 +99,15 @@ const ExpenseManager: React.FC = () => {
 
   const handleUpdate = async (id: string) => {
     try {
-      const d = new Date(form.date);
       const res = await updateExpense(id, {
         ...form,
         amount: Number(form.amount),
-        month: d.getMonth() + 1,
-        year: d.getFullYear(),
       });
       setExpenses(expenses.map((e) => (e._id === id ? res.data : e)));
+
+      const resTotal = await getTotalExpense();
+      setTotalExpense(resTotal.data);
+
       setEditingId(null);
       setShowEditModal(false);
       setForm({ amount: "", description: "", date: "", categoryId: "" });
@@ -107,16 +118,15 @@ const ExpenseManager: React.FC = () => {
     }
   };
 
-  const handleDeleteClick = (id: string) => {
-    setDeletingId(id);
-    setShowDeleteModal(true);
-  };
-
   const confirmDelete = async () => {
     if (!deletingId) return;
     try {
       await deleteExpense(deletingId);
       setExpenses(expenses.filter((e) => e._id !== deletingId));
+
+      const resTotal = await getTotalExpense();
+      setTotalExpense(resTotal.data);
+
       setDeletingId(null);
       setShowDeleteModal(false);
       toast.success("Đã xóa khoản chi");
@@ -125,8 +135,6 @@ const ExpenseManager: React.FC = () => {
       toast.error(error.response?.data?.message || "Lỗi khi xóa khoản chi");
     }
   };
-
-  const totalAmount = expenses.reduce((sum, e) => sum + e.amount, 0);
 
   return (
     <ExpenseStyled>
@@ -169,7 +177,9 @@ const ExpenseManager: React.FC = () => {
       </div>
 
       {/* Tổng số tiền đã chi */}
-      <p className="total">Tổng số tiền đã chi: {formatAmount(totalAmount)}</p>
+      <p className="total">
+        Tổng số tiền đã chi: {formatAmount(totalExpense.total)}
+      </p>
 
       {/* Bảng danh sách */}
       <table>
@@ -186,7 +196,7 @@ const ExpenseManager: React.FC = () => {
           {expenses.map((e) => (
             <tr key={e._id}>
               <td>{e.description}</td>
-              <td>{formatAmount(e.amount)}</td>
+              <td>{formatAmount(e.amount)}</td> {/* ✅ frontend format */}
               <td>{dateFormat(e.date)}</td>
               <td>{e.category?.name || "Khác"}</td>
               <td>
@@ -207,7 +217,10 @@ const ExpenseManager: React.FC = () => {
                 </button>
                 <button
                   className="delete"
-                  onClick={() => handleDeleteClick(e._id)}
+                  onClick={() => {
+                    setDeletingId(e._id);
+                    setShowDeleteModal(true);
+                  }}
                 >
                   Xóa
                 </button>
