@@ -1,6 +1,7 @@
 import React from "react";
 import { YearlyStats } from "../../api/statsApi";
 import styled from "styled-components";
+import { formatAmount } from "../../utils/formatAmount"; 
 
 interface Props {
   stats: YearlyStats;
@@ -17,32 +18,30 @@ const YearSummary: React.FC<Props> = ({ stats }) => {
     <SummaryWrapper>
       <SummaryCard>
         <h3>Tổng chi tiêu</h3>
-        <p>{totals.spent.toLocaleString("vi-VN")} ₫</p>
+        <p>{formatAmount(totals.spent)}</p>
       </SummaryCard>
       <SummaryCard>
         <h3>Tổng định mức</h3>
-        <p>{totals.budget.toLocaleString("vi-VN")} ₫</p>
+        <p>{formatAmount(totals.budget)}</p>
       </SummaryCard>
       <SummaryCard highlight="red">
         <h3>Tổng vượt định mức</h3>
-        <p>{totals.over.toLocaleString("vi-VN")} ₫</p>
+        <p>{formatAmount(totals.over)}</p>
       </SummaryCard>
       <SummaryCard highlight={remaining >= 0 ? "green" : "red"}>
         <h3>Tiền còn dư</h3>
-        <p>{remaining.toLocaleString("vi-VN")} ₫</p>
+        <p>{formatAmount(remaining)}</p>
       </SummaryCard>
       <SummaryCard highlight={percentOver > 50 ? "red" : "green"}>
         <h3>Tỷ lệ vượt định mức</h3>
         <p>{monthsOver}/{months.length} tháng ({percentOver}%)</p>
       </SummaryCard>
-      
     </SummaryWrapper>
   );
 };
 
 export default YearSummary;
 
-// ✅ Styled-components
 const SummaryWrapper = styled.div`
   display: flex;
   gap: 20px;
