@@ -8,14 +8,9 @@ import { useGlobalContext } from "../../context/useGlobalContext";
 import { InnerLayout } from "../../styles/Layouts";
 import { dollar } from "../../utils/Icons";
 import axios from "axios";
+import { formatAmount } from "../../utils/formatAmount";
 
 // Format number helper
-const formatAmount = (value: number) => {
-  if (value >= 1_000_000_000) return (value / 1_000_000_000).toFixed(1) + "B";
-  if (value >= 1_000_000) return (value / 1_000_000).toFixed(1) + "M";
-  if (value >= 1_000) return (value / 1_000).toFixed(1) + "K";
-  return value.toString();
-};
 
 interface Transaction {
   amount: number;
@@ -170,11 +165,6 @@ const HomeDashboard: React.FC = () => {
   const budgetPercentage =
     totalBudgetLimit > 0 ? (totalBudgetSpent / totalBudgetLimit) * 100 : 0;
 
-  // Kiểm tra: budgetRemaining và tiền còn dư là 1 không?
-  // budgetRemaining = totalBudgetLimit - totalBudgetSpent
-  // Nếu budgetRemaining > 0 => Còn dư tiền, chưa vượt định mức
-  // Nếu budgetRemaining < 0 => Đã vượt định mức (âm = số tiền vượt)
-  // Nếu budgetRemaining = 0 => Vừa đủ định mức
 
   // Tạo năm cho dropdown
   const currentYearNow = new Date().getFullYear();
@@ -186,14 +176,13 @@ const HomeDashboard: React.FC = () => {
         <div className="dashboard-header">
           <h1>Tổng Quan Chi Tiêu</h1>
           <p className="subtitle">
-            Quản lý và theo dõi chi tiêu của bạn - Tháng {currentMonth}/
+            Quản lý và theo dõi chi tiêu của bạn - năm
             {currentYear}
           </p>
         </div>
 
         {/* Bộ lọc năm */}
         <FilterBar>
-          <label htmlFor="year">Xem thống kê năm: </label>
           <select
             id="year"
             value={year}
@@ -215,7 +204,7 @@ const HomeDashboard: React.FC = () => {
               <span className="icon expense-icon">💸</span>
             </div>
             <p className="amount">
-              {dollar} {formatAmount(totalExpense)}
+               {formatAmount(totalExpense)}
             </p>
             <div className="card-footer">
               <span className="info-text">
@@ -230,7 +219,7 @@ const HomeDashboard: React.FC = () => {
               <span className="icon average-icon">📊</span>
             </div>
             <p className="amount">
-              {dollar} {formatAmount(averageExpense)}
+               {formatAmount(averageExpense)}
             </p>
             <div className="card-footer">
               <span className="info-text">Trung bình / giao dịch</span>
@@ -246,7 +235,7 @@ const HomeDashboard: React.FC = () => {
                 budgetRemaining >= 0 ? "budget-amount" : "over-amount"
               }`}
             >
-              {dollar} {formatAmount(Math.abs(budgetRemaining))}
+               {formatAmount(Math.abs(budgetRemaining))}
             </p>
             <div className="card-footer">
               <span
@@ -290,11 +279,11 @@ const HomeDashboard: React.FC = () => {
                       </h4>
                       <div className="budget-amounts">
                         <span className="spent">
-                          ${formatAmount(budget.spent || 0)}
+                          {formatAmount(budget.spent || 0)}
                         </span>
                         <span className="separator">/</span>
                         <span className="limit">
-                          ${formatAmount(budget.limit)}
+                          {formatAmount(budget.limit)}
                         </span>
                       </div>
                     </div>
@@ -322,7 +311,7 @@ const HomeDashboard: React.FC = () => {
                       </span>
                       {budget.percentage! > 100 && (
                         <span className="over-text">
-                          Vượt ${formatAmount(budget.spent! - budget.limit)}
+                          Vượt {formatAmount(budget.spent! - budget.limit)}
                         </span>
                       )}
                     </div>
@@ -352,7 +341,7 @@ const HomeDashboard: React.FC = () => {
                       <p className="category-count">{cat.count} giao dịch</p>
                     </div>
                     <div className="category-amount">
-                      ${formatAmount(cat.total)}
+                      {formatAmount(cat.total)}
                     </div>
                   </div>
                 ))
@@ -374,17 +363,17 @@ const HomeDashboard: React.FC = () => {
               <h3>Chi Tiêu Cao/Thấp</h3>
               <div className="stat-row">
                 <span className="label">Thấp nhất:</span>
-                <span className="value">${formatAmount(minExpense)}</span>
+                <span className="value">{formatAmount(minExpense)}</span>
               </div>
               <div className="stat-row">
                 <span className="label">Cao nhất:</span>
                 <span className="value highlight">
-                  ${formatAmount(maxExpense)}
+                  {formatAmount(maxExpense)}
                 </span>
               </div>
               <div className="stat-row">
                 <span className="label">Trung bình:</span>
-                <span className="value">${formatAmount(averageExpense)}</span>
+                <span className="value">{formatAmount(averageExpense)}</span>
               </div>
             </div>
 
