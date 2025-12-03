@@ -50,7 +50,7 @@ const BudgetManager: React.FC = () => {
       setBudgets((prev) => prev.filter((b) => b._id !== deletingId));
       setDeletingId(null);
       setShowDeleteModal(false);
-    } catch (err) {
+    } catch {
       alert("Không thể xóa định mức");
     }
   };
@@ -75,7 +75,7 @@ const BudgetManager: React.FC = () => {
       );
       setShowModal(false);
       setEditingBudget(null);
-    } catch (err) {
+    } catch {
       alert("Không thể cập nhật định mức");
     }
   };
