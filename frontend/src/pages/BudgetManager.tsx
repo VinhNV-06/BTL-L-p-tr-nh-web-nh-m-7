@@ -4,6 +4,7 @@ import { createPortal } from "react-dom";
 import BudgetForm from "../Components/Budget/BudgetForm";
 import { getBudgetsByMonth, deleteBudget, updateBudget } from "../api/budgetApi";
 import type { Budget } from "../api/budgetApi";
+import { edit, save, cancel, agree} from "../utils/Icons";
 
 const BudgetManager: React.FC = () => {
   const [budgets, setBudgets] = useState<Budget[]>([]);
@@ -160,13 +161,13 @@ const BudgetManager: React.FC = () => {
                     className="update-btn"
                     onClick={() => handleUpdateClick(budget)}
                   >
-                     Sửa
+                    {edit} Sửa
                   </button>
                   <button
                     className="delete-btn"
                     onClick={() => handleDeleteClick(budget._id)}
                   >
-                     Xóa
+                    {cancel} Xóa
                   </button>
                 </div>
               </BudgetItem>
@@ -196,8 +197,8 @@ const BudgetManager: React.FC = () => {
                   />
                 </label>
                 <div className="modal-actions">
-                  <button type="submit" className="save-btn"> Lưu </button>
-                  <button type="button" className="cancel-btn" onClick={() => setShowModal(false)}> Hủy </button>
+                  <button type="submit" className="save-btn">{save} Lưu </button>
+                  <button type="button" className="cancel-btn" onClick={() => setShowModal(false)}>{cancel} Hủy </button>
                 </div>
               </form>
             </ModalContent>
@@ -214,8 +215,8 @@ const BudgetManager: React.FC = () => {
               <h3>Xác nhận xóa</h3>
               <p>Bạn có chắc chắn muốn xóa định mức này?</p>
               <div className="modal-actions">
-                <button className="save-btn" onClick={confirmDelete}>Đồng ý</button>
-                <button className="cancel-btn" onClick={() => setShowDeleteModal(false)}>Hủy</button>
+                <button className="save-btn" onClick={confirmDelete}>{agree} Đồng ý</button>
+                <button className="cancel-btn" onClick={() => setShowDeleteModal(false)}>{cancel} Hủy</button>
               </div>
             </ModalContent>
           </ModalOverlay>,

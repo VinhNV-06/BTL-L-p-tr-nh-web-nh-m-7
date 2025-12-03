@@ -34,3 +34,8 @@ export const food: ReactElement = <i className="fa-solid fa-bowl-food"></i>
 export const medical: ReactElement = <i className="fa-solid fa-briefcase-medical"></i>
 export const tv: ReactElement = <i className="fa-solid fa-tv"></i>
 export const circle: ReactElement = <i className="fa-solid fa-circle-dot"></i>
+export const edit: ReactElement = <i className="fa-solid fa-pen-to-square"></i>
+export const save: ReactElement = <i className="fa-solid fa-floppy-disk"></i>
+export const cancel: ReactElement = <i className="fa-solid fa-ban"></i>
+export const agree: ReactElement = <i className="fa-solid fa-thumbs-up"></i>
+
