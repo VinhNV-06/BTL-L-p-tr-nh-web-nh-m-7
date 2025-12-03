@@ -6,7 +6,6 @@ import AlertBox from "../AlertBox/AlertBox";
 import styled from "styled-components";
 import { useGlobalContext } from "../../context/useGlobalContext";
 import { InnerLayout } from "../../styles/Layouts";
-import { dollar } from "../../utils/Icons";
 import axios from "axios";
 import { formatAmount } from "../../utils/formatAmount";
 
@@ -36,16 +35,12 @@ interface CategoryExpense {
 }
 
 const HomeDashboard: React.FC = () => {
-  // State từ code mới
   const [stats, setStats] = useState<YearlyStats | null>(null);
   const [year, setYear] = useState<number>(new Date().getFullYear());
 
-  // State và context từ code cũ
-  const { expenses, formattedTotalExpense, getExpenses } =
-    useGlobalContext() as any;
+  const { expenses, getExpenses } = useGlobalContext();
+
   const [budgets, setBudgets] = useState<Budget[]>([]);
-  const [currentMonth] = useState(new Date().getMonth() + 1);
-  const [currentYear] = useState(new Date().getFullYear());
 
   // Load dữ liệu ban đầu
   useEffect(() => {
@@ -77,41 +72,45 @@ const HomeDashboard: React.FC = () => {
   };
 
   // Fetch budgets theo năm được chọn
-  const fetchBudgets = async () => {
-    try {
-      // Lấy tất cả budgets của năm được chọn
-      const allMonthsBudgets = [];
-      for (let month = 1; month <= 12; month++) {
-        try {
-          const response = await axios.get(
-            `http://localhost:5000/api/v1/budgets/by-month?month=${month}&year=${year}`
-          );
-          allMonthsBudgets.push(...response.data);
-        } catch (err) {
-          // Tháng không có budget thì bỏ qua
+const fetchBudgets = async () => {
+  try {
+    const allMonthsBudgets: Budget[] = [];
+    for (let month = 1; month <= 12; month++) {
+      try {
+        const response = await axios.get<Budget[]>(
+          `http://localhost:5000/api/v1/budgets/by-month?month=${month}&year=${year}`
+        );
+        allMonthsBudgets.push(...response.data);
+      } catch (error: unknown) {
+        // Tháng không có budget thì bỏ qua
+        if (axios.isAxiosError(error)) {
+          console.error(`Lỗi tải budget tháng ${month}:`, error.message);
+        } else {
+          console.error(`Lỗi không xác định khi tải budget tháng ${month}`);
         }
       }
-
-      // Tính spent cho mỗi budget dựa trên expenses của năm được chọn
-      const budgetsWithSpent = allMonthsBudgets.map((budget: Budget) => {
-        const spent = filteredExpenses
-          .filter(
-            (exp: Transaction & { category: { _id: string } }) =>
-              exp.category?._id === budget.category._id &&
-              new Date(exp.date).getMonth() + 1 === budget.month
-          )
-          .reduce((sum: number, exp: Transaction) => sum + exp.amount, 0);
-
-        const percentage = budget.limit > 0 ? (spent / budget.limit) * 100 : 0;
-
-        return { ...budget, spent, percentage };
-      });
-
-      setBudgets(budgetsWithSpent);
-    } catch (error) {
-      console.error("Error fetching budgets:", error);
     }
-  };
+
+    // Tính spent cho mỗi budget dựa trên expenses đã lọc
+    const budgetsWithSpent: Budget[] = allMonthsBudgets.map((budget) => {
+      const spent = filteredExpenses
+        .filter(
+          (exp: Transaction) =>
+            exp.category?._id === budget.category._id &&
+            new Date(exp.date).getMonth() + 1 === budget.month
+        )
+        .reduce((sum: number, exp: Transaction) => sum + exp.amount, 0);
+
+      const percentage = budget.limit > 0 ? (spent / budget.limit) * 100 : 0;
+      return { ...budget, spent, percentage };
+    });
+
+    setBudgets(budgetsWithSpent);
+  } catch (error) {
+    console.error("Error fetching budgets:", error);
+  }
+};
+
 
   // Lọc expenses theo năm được chọn
   const filteredExpenses = expenses.filter((exp: Transaction) => {
@@ -134,10 +133,10 @@ const HomeDashboard: React.FC = () => {
     : 0;
 
   // Tính expenses theo category cho năm được chọn
-  const expensesByCategory = filteredExpenses.reduce(
+  const expensesByCategory: CategoryExpense[] = filteredExpenses.reduce(
     (
       acc: CategoryExpense[],
-      exp: Transaction & { category: { name: string } }
+      exp: Transaction & { category?: { name: string } }
     ) => {
       const categoryName = exp.category?.name || "Khác";
       const existing = acc.find((item) => item.category === categoryName);
@@ -162,9 +161,8 @@ const HomeDashboard: React.FC = () => {
   const totalBudgetSpent = stats ? stats.totals.spent : 0;
   const budgetRemaining = totalBudgetLimit - totalBudgetSpent;
 
-  const budgetPercentage =
-    totalBudgetLimit > 0 ? (totalBudgetSpent / totalBudgetLimit) * 100 : 0;
-
+  /*   const budgetPercentage =
+    totalBudgetLimit > 0 ? (totalBudgetSpent / totalBudgetLimit) * 100 : 0; */
 
   // Tạo năm cho dropdown
   const currentYearNow = new Date().getFullYear();
@@ -176,8 +174,7 @@ const HomeDashboard: React.FC = () => {
         <div className="dashboard-header">
           <h1>Tổng Quan Chi Tiêu</h1>
           <p className="subtitle">
-            Quản lý và theo dõi chi tiêu của bạn - năm
-            {currentYear}
+            Quản lý và theo dõi chi tiêu của bạn - năm {year}
           </p>
         </div>
 
@@ -203,9 +200,7 @@ const HomeDashboard: React.FC = () => {
               <h3>Tổng Chi Tiêu</h3>
               <span className="icon expense-icon">💸</span>
             </div>
-            <p className="amount">
-               {formatAmount(totalExpense)}
-            </p>
+            <p className="amount">{formatAmount(totalExpense)}</p>
             <div className="card-footer">
               <span className="info-text">
                 {filteredExpenses.length} giao dịch
@@ -218,9 +213,7 @@ const HomeDashboard: React.FC = () => {
               <h3>Chi Tiêu Trung Bình</h3>
               <span className="icon average-icon">📊</span>
             </div>
-            <p className="amount">
-               {formatAmount(averageExpense)}
-            </p>
+            <p className="amount">{formatAmount(averageExpense)}</p>
             <div className="card-footer">
               <span className="info-text">Trung bình / giao dịch</span>
             </div>
@@ -235,7 +228,7 @@ const HomeDashboard: React.FC = () => {
                 budgetRemaining >= 0 ? "budget-amount" : "over-amount"
               }`}
             >
-               {formatAmount(Math.abs(budgetRemaining))}
+              {formatAmount(Math.abs(budgetRemaining))}
             </p>
             <div className="card-footer">
               <span
