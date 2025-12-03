@@ -3,7 +3,7 @@ import styled from "styled-components";
 import Button from "../Button/Button";
 import { plus } from "../../utils/Icons";
 import { getCategories } from "../../api/categoryApi";
-import axios from "axios";
+import axios, { AxiosError } from "axios";
 
 interface BudgetFormProps {
   onSuccess?: () => void;
@@ -14,6 +14,17 @@ interface Category {
   name: string;
 }
 
+interface InputState {
+  categoryId: string;
+  limit: string;
+  month: number;
+  year: number;
+}
+
+interface ApiErrorResponse {
+  message?: string;
+}
+
 const API_URL = "http://localhost:5000/api/v1";
 
 const BudgetForm: React.FC<BudgetFormProps> = ({ onSuccess }) => {
@@ -21,7 +32,7 @@ const BudgetForm: React.FC<BudgetFormProps> = ({ onSuccess }) => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
-  const [inputState, setInputState] = useState({
+  const [inputState, setInputState] = useState<InputState>({
     categoryId: "",
     limit: "",
     month: new Date().getMonth() + 1,
@@ -37,8 +48,9 @@ const BudgetForm: React.FC<BudgetFormProps> = ({ onSuccess }) => {
       try {
         const res = await getCategories();
         setCategories(res.data);
-      } catch (err: any) {
-        console.error("Lỗi khi lấy danh mục:", err);
+      } catch (err: unknown) {
+        const error = err as AxiosError<ApiErrorResponse>;
+        console.error("Lỗi khi lấy danh mục:", error.message);
         setError("Không thể tải danh mục chi tiêu");
       }
     };
@@ -46,7 +58,7 @@ const BudgetForm: React.FC<BudgetFormProps> = ({ onSuccess }) => {
   }, []);
 
   const handleInput =
-    (name: string) =>
+    (name: keyof InputState) =>
     (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
       setInputState({ ...inputState, [name]: e.target.value });
       setError("");
@@ -72,8 +84,8 @@ const BudgetForm: React.FC<BudgetFormProps> = ({ onSuccess }) => {
         {
           categoryId: inputState.categoryId,
           limit,
-          month: Number(inputState.month),
-          year: Number(inputState.year),
+          month: inputState.month,
+          year: inputState.year,
         },
         { headers: authHeaders }
       );
@@ -87,8 +99,9 @@ const BudgetForm: React.FC<BudgetFormProps> = ({ onSuccess }) => {
       });
 
       onSuccess?.();
-    } catch (err: any) {
-      setError(err.response?.data?.message || err.message || "Có lỗi xảy ra");
+    } catch (err: unknown) {
+      const error = err as AxiosError<ApiErrorResponse>;
+      setError(error.response?.data?.message || error.message || "Có lỗi xảy ra");
     } finally {
       setLoading(false);
     }
@@ -173,6 +186,7 @@ const BudgetForm: React.FC<BudgetFormProps> = ({ onSuccess }) => {
 };
 
 export default BudgetForm;
+
 
 const FormStyled = styled.form`
   display: flex;
