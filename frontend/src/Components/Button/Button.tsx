@@ -42,7 +42,6 @@ const Button: React.FC<ButtonProps> = ({
   );
 };
 
-// styled-components nhận thêm prop hColor
 const ButtonStyled = styled.button<{ hColor?: string }>`
   outline: none;
   border: none;
