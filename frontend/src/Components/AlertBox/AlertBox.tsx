@@ -20,7 +20,7 @@ const AlertBox: React.FC<Props> = ({ stats }) => {
       <AlertList>
         {monthsOver.map((m) => (
           <li key={m.month}>
-            <span>Tháng {m.month}</span> — vượt{" "}
+            <span>Tháng {m.month}</span> — chi tiêu vượt{" "}
             <strong>{m.over.toLocaleString("vi-VN")} ₫</strong>
           </li>
         ))}
