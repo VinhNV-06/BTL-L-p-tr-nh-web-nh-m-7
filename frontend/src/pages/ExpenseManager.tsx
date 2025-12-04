@@ -4,7 +4,6 @@ import {
   addExpense,
   updateExpense,
   deleteExpense,
-  getTotalExpense,
 } from "../api/expenseApi";
 import { getCategories } from "../api/categoryApi";
 import { AxiosError } from "axios";
@@ -55,6 +54,18 @@ const ExpenseManager: React.FC = () => {
   const [selectedMonth, setSelectedMonth] = useState<number | null>(null);
   const [selectedYear, setSelectedYear] = useState<number>(new Date().getFullYear());
 
+  const filterByMonthYear = (list: Expense[]) => {
+    return list.filter(
+      (e) =>
+        new Date(e.date).getFullYear() === selectedYear &&
+        (!selectedMonth || new Date(e.date).getMonth() + 1 === selectedMonth)
+    );
+  };
+
+  // tiện ích tính tổng
+  const computeTotal = (list: Expense[]) =>
+    list.reduce((acc, item) => acc + item.amount, 0);
+
 
   useEffect(() => {
     const fetchData = async () => {
@@ -99,12 +110,16 @@ const ExpenseManager: React.FC = () => {
         ...form,
         amount: Number(form.amount),
       });
-      setExpenses([...expenses, res.data]);
 
-      const resTotal = selectedMonth && selectedYear
-        ? await getTotalExpense(selectedMonth, selectedYear)
-        : await getTotalExpense();
-      setTotalExpense(resTotal.data);
+      const cat = categories.find(c => c._id === form.categoryId) ?? { _id: form.categoryId, name: "Khác" };
+      const newExpense = { ...res.data, category: cat };
+
+      setExpenses(prev => {
+        const next = [...prev, newExpense];
+        const filtered = filterByMonthYear(next);
+        setTotalExpense({ total: computeTotal(filtered) });
+        return next;
+      });
 
       setForm({ amount: "", description: "", date: "", categoryId: "" });
       toast.success("Thêm khoản chi thành công");
@@ -120,12 +135,16 @@ const ExpenseManager: React.FC = () => {
         ...form,
         amount: Number(form.amount),
       });
-      setExpenses(expenses.map((e) => (e._id === id ? res.data : e)));
 
-      const resTotal = selectedMonth && selectedYear
-        ? await getTotalExpense(selectedMonth, selectedYear)
-        : await getTotalExpense();
-      setTotalExpense(resTotal.data);
+      const cat = categories.find(c => c._id === form.categoryId) ?? { _id: form.categoryId, name: "Khác" };
+      const updatedExpense = { ...res.data, category: cat };
+
+      setExpenses(prev => {
+        const next = prev.map(e => (e._id === id ? updatedExpense : e));
+        const filtered = filterByMonthYear(next);
+        setTotalExpense({ total: computeTotal(filtered) });
+        return next;
+      });
 
       setEditingId(null);
       setShowEditModal(false);
@@ -141,12 +160,13 @@ const ExpenseManager: React.FC = () => {
     if (!deletingId) return;
     try {
       await deleteExpense(deletingId);
-      setExpenses(expenses.filter((e) => e._id !== deletingId));
 
-      const resTotal = selectedMonth && selectedYear
-        ? await getTotalExpense(selectedMonth, selectedYear)
-        : await getTotalExpense();
-      setTotalExpense(resTotal.data);
+      setExpenses(prev => {
+        const next = prev.filter(e => e._id !== deletingId);
+        const filtered = filterByMonthYear(next);
+        setTotalExpense({ total: computeTotal(filtered) });
+        return next;
+      });
 
       setDeletingId(null);
       setShowDeleteModal(false);
@@ -156,6 +176,7 @@ const ExpenseManager: React.FC = () => {
       toast.error(error.response?.data?.message || "Lỗi khi xóa khoản chi");
     }
   };
+
 
   return (
     <ExpenseStyled>
