@@ -377,7 +377,6 @@ const ExpenseStyled = styled.div`
     }
   }
 
-  /* ✅ Style cho dropdown tháng/năm */
   .filter {
     display: flex;
     gap: 1rem;
@@ -385,23 +384,15 @@ const ExpenseStyled = styled.div`
 
     select {
       padding: 0.6rem 1rem;
-      border: 2px solid #d1c4e9;       
-      border-radius: 10px;
+      border: 2px solid #ddd;
+      border-radius: 8px;
       font-size: 1rem;
-      background: #fdf7ff;            
-      color: #4a148c;                
+      background: #fff;
       cursor: pointer;
-      transition: all 0.3s ease;
+      transition: border-color 0.2s ease;
 
       &:hover {
-        border-color: #7e57c2;          
-        background-color: #f3e5f5;     
-      }
-
-      &:focus {
-        outline: none;
-        border-color: #7e57c2;
-        box-shadow: 0 0 6px rgba(126, 87, 194, 0.4);
+        border-color: rgba(34, 34, 96, 0.9);
       }
     }
   }
