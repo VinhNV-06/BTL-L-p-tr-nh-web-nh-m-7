@@ -847,7 +847,7 @@ const FilterBar = styled.div`
     border-radius: 10px;
     font-size: 1rem;
     background: #fdf7ff;
-    color: #4a148c;
+    color: #370079ff;
     cursor: pointer;
     transition: all 0.3s ease;
 
