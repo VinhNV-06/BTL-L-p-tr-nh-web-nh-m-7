@@ -54,9 +54,13 @@ exports.updateCategory = async (req, res) => {
     if (!updated) return res.status(404).json({ message: "Không tìm thấy danh mục" });
     res.status(200).json(updated);
   } catch (error) {
+    if (error.code === 11000) {
+      return res.status(400).json({ message: "Tên danh mục đã tồn tại" });
+    }
     res.status(500).json({ message: "Server Error" });
   }
 };
+
 
 // Xóa danh mục
 exports.deleteCategory = async (req, res) => {

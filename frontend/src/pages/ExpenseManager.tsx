@@ -9,16 +9,20 @@ import { getCategories } from "../api/categoryApi";
 import { AxiosError } from "axios";
 import styled from "styled-components";
 import { dateFormat } from "../utils/dateFormat";
-import { formatAmount } from "../utils/formatAmount";
+import { formatAmount } from "../utils/formatAmount"; 
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import { plus, edit, trash, save, cancel, agree } from "../utils/Icons";
 
 interface Expense {
   _id: string;
   amount: number;
   description: string;
   date: string;
-  category: string;
+  category: {
+    _id: string;
+    name: string;
+  };
 }
 
 interface Category {
@@ -37,25 +41,62 @@ const ExpenseManager: React.FC = () => {
     amount: "",
     description: "",
     date: "",
-    category: "",
+    categoryId: "",
   });
   const [editingId, setEditingId] = useState<string | null>(null);
   const [showEditModal, setShowEditModal] = useState(false);
+
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [deletingId, setDeletingId] = useState<string | null>(null);
+
+  const [totalExpense, setTotalExpense] = useState<{ total: number }>({ total: 0 });
+
+  const [selectedMonth, setSelectedMonth] = useState<number | null>(null);
+  const [selectedYear, setSelectedYear] = useState<number>(new Date().getFullYear());
+
+  const filterByMonthYear = (list: Expense[]) => {
+    return list.filter(
+      (e) =>
+        new Date(e.date).getFullYear() === selectedYear &&
+        (!selectedMonth || new Date(e.date).getMonth() + 1 === selectedMonth)
+    );
+  };
+
+  // tiện ích tính tổng
+  const computeTotal = (list: Expense[]) =>
+    list.reduce((acc, item) => acc + item.amount, 0);
+
 
   useEffect(() => {
     const fetchData = async () => {
       try {
         const resExpenses = await getExpenses();
-        setExpenses(resExpenses.data);
+        let data = resExpenses.data;
+
+        // lọc theo năm hiện tại
+        data = data.filter((e: Expense) => new Date(e.date).getFullYear() === selectedYear);
+
+        // nếu chọn tháng thì lọc thêm
+        if (selectedMonth) {
+          data = data.filter((e: Expense) => new Date(e.date).getMonth() + 1 === selectedMonth);
+        }
+
+        setExpenses(data);
+
         const resCategories = await getCategories();
         setCategories(resCategories.data);
-      } catch (err: unknown) {
+
+        // tổng tính lại theo data đã lọc
+        const total = data.reduce((acc: number, item: Expense) => acc + item.amount, 0);
+        setTotalExpense({ total });
+      } catch (err) {
         const error = err as AxiosError<ApiErrorResponse>;
         toast.error(error.response?.data?.message || "Lỗi khi tải dữ liệu");
       }
     };
     fetchData();
-  }, []);
+  }, [selectedMonth, selectedYear]);
+
 
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
@@ -69,8 +110,18 @@ const ExpenseManager: React.FC = () => {
         ...form,
         amount: Number(form.amount),
       });
-      setExpenses([...expenses, res.data]);
-      setForm({ amount: "", description: "", date: "", category: "" });
+
+      const cat = categories.find(c => c._id === form.categoryId) ?? { _id: form.categoryId, name: "Khác" };
+      const newExpense = { ...res.data, category: cat };
+
+      setExpenses(prev => {
+        const next = [...prev, newExpense];
+        const filtered = filterByMonthYear(next);
+        setTotalExpense({ total: computeTotal(filtered) });
+        return next;
+      });
+
+      setForm({ amount: "", description: "", date: "", categoryId: "" });
       toast.success("Thêm khoản chi thành công");
     } catch (err: unknown) {
       const error = err as AxiosError<ApiErrorResponse>;
@@ -84,10 +135,20 @@ const ExpenseManager: React.FC = () => {
         ...form,
         amount: Number(form.amount),
       });
-      setExpenses(expenses.map((e) => (e._id === id ? res.data : e)));
+
+      const cat = categories.find(c => c._id === form.categoryId) ?? { _id: form.categoryId, name: "Khác" };
+      const updatedExpense = { ...res.data, category: cat };
+
+      setExpenses(prev => {
+        const next = prev.map(e => (e._id === id ? updatedExpense : e));
+        const filtered = filterByMonthYear(next);
+        setTotalExpense({ total: computeTotal(filtered) });
+        return next;
+      });
+
       setEditingId(null);
       setShowEditModal(false);
-      setForm({ amount: "", description: "", date: "", category: "" });
+      setForm({ amount: "", description: "", date: "", categoryId: "" });
       toast.success("Cập nhật thành công");
     } catch (err: unknown) {
       const error = err as AxiosError<ApiErrorResponse>;
@@ -95,10 +156,20 @@ const ExpenseManager: React.FC = () => {
     }
   };
 
-  const handleDelete = async (id: string) => {
+  const confirmDelete = async () => {
+    if (!deletingId) return;
     try {
-      await deleteExpense(id);
-      setExpenses(expenses.filter((e) => e._id !== id));
+      await deleteExpense(deletingId);
+
+      setExpenses(prev => {
+        const next = prev.filter(e => e._id !== deletingId);
+        const filtered = filterByMonthYear(next);
+        setTotalExpense({ total: computeTotal(filtered) });
+        return next;
+      });
+
+      setDeletingId(null);
+      setShowDeleteModal(false);
       toast.success("Đã xóa khoản chi");
     } catch (err: unknown) {
       const error = err as AxiosError<ApiErrorResponse>;
@@ -106,8 +177,6 @@ const ExpenseManager: React.FC = () => {
     }
   };
 
-  // ✅ Tính tổng số tiền đã chi
-  const totalAmount = expenses.reduce((sum, e) => sum + e.amount, 0);
 
   return (
     <ExpenseStyled>
@@ -134,7 +203,11 @@ const ExpenseManager: React.FC = () => {
           value={form.date}
           onChange={handleChange}
         />
-        <select name="category" value={form.category} onChange={handleChange}>
+        <select
+          name="categoryId"
+          value={form.categoryId}
+          onChange={handleChange}
+        >
           <option value="">-- Chọn danh mục --</option>
           {categories.map((c) => (
             <option key={c._id} value={c._id}>
@@ -142,11 +215,34 @@ const ExpenseManager: React.FC = () => {
             </option>
           ))}
         </select>
-        <button onClick={handleAdd}>➕ Thêm</button>
+        <button onClick={handleAdd}>{plus} Thêm chi tiêu </button>
       </div>
 
-      {/* ✅ Tổng số tiền đã chi */}
-      <p className="total">Tổng số tiền đã chi: {formatAmount(totalAmount)}</p>
+      {/* Filter tháng/năm */}
+      <div className="filter">
+        <select
+          value={selectedMonth ?? ""}
+          onChange={(e) => setSelectedMonth(e.target.value ? Number(e.target.value) : null)}
+        >
+          <option value="">Tất cả tháng</option>
+          {Array.from({ length: 12 }, (_, i) => (
+            <option key={i+1} value={i+1}>Tháng {i+1}</option>
+          ))}
+        </select>
+
+        <select value={selectedYear} onChange={(e) => setSelectedYear(Number(e.target.value))}>
+          {Array.from({ length: 6 }, (_, i) => {
+            const year = new Date().getFullYear() - 2 + i;
+            return <option key={year} value={year}>Năm {year}</option>;
+          })}
+        </select>
+      </div>
+
+
+      {/* Tổng số tiền đã chi */}
+      <p className="total">
+        Tổng số tiền đã chi: {formatAmount(totalExpense.total)}
+      </p>
 
       {/* Bảng danh sách */}
       <table>
@@ -163,11 +259,9 @@ const ExpenseManager: React.FC = () => {
           {expenses.map((e) => (
             <tr key={e._id}>
               <td>{e.description}</td>
-              <td>{formatAmount(e.amount)}</td>
+              <td>{formatAmount(e.amount)}</td> 
               <td>{dateFormat(e.date)}</td>
-              <td>
-                {categories.find((c) => c._id === e.category)?.name || "Khác"}
-              </td>
+              <td>{e.category?.name || "Khác"}</td>
               <td>
                 <button
                   className="edit"
@@ -177,18 +271,21 @@ const ExpenseManager: React.FC = () => {
                       amount: e.amount.toString(),
                       description: e.description,
                       date: e.date.slice(0, 10),
-                      category: e.category,
+                      categoryId: e.category._id,
                     });
                     setShowEditModal(true);
                   }}
                 >
-                  ✏️ Sửa
+                  {edit} Sửa
                 </button>
                 <button
                   className="delete"
-                  onClick={() => handleDelete(e._id)}
+                  onClick={() => {
+                    setDeletingId(e._id);
+                    setShowDeleteModal(true);
+                  }}
                 >
-                  🗑️ Xóa
+                  {trash} Xóa
                 </button>
               </td>
             </tr>
@@ -220,8 +317,8 @@ const ExpenseManager: React.FC = () => {
               onChange={handleChange}
             />
             <select
-              name="category"
-              value={form.category}
+              name="categoryId"
+              value={form.categoryId}
               onChange={handleChange}
             >
               <option value="">-- Chọn danh mục --</option>
@@ -232,8 +329,22 @@ const ExpenseManager: React.FC = () => {
               ))}
             </select>
             <div className="modal-buttons">
-              <button onClick={() => handleUpdate(editingId!)}>💾 Lưu</button>
-              <button onClick={() => setShowEditModal(false)}>❌ Hủy</button>
+              <button onClick={() => handleUpdate(editingId!)}>{save} Lưu</button>
+              <button onClick={() => setShowEditModal(false)}>{cancel} Hủy</button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Modal xác nhận xóa */}
+      {showDeleteModal && (
+        <div className="modal">
+          <div className="modal-content">
+            <h3>Xác nhận xóa</h3>
+            <p>Bạn có chắc chắn muốn xóa khoản chi này?</p>
+            <div className="modal-buttons">
+              <button onClick={confirmDelete}>{agree} Đồng ý</button>
+              <button onClick={() => setShowDeleteModal(false)}>{cancel} Hủy</button>
             </div>
           </div>
         </div>
@@ -244,16 +355,17 @@ const ExpenseManager: React.FC = () => {
   );
 };
 
-export default ExpenseManager;
+export default ExpenseManager
 
 const ExpenseStyled = styled.div`
   padding: 2rem;
   background: #fcf6f9;
   border-radius: 16px;
-  box-shadow: 0px 1px 15px rgba(0, 0, 0, 0.06);
+  box-shadow: 0px 1px 15px rgba(0,0,0,0.06);
 
   h2 {
     margin-bottom: 1rem;
+    color: #333;
   }
 
   .form {
@@ -271,18 +383,47 @@ const ExpenseStyled = styled.div`
     }
 
     button {
-      padding: 0.6rem 1.2rem;
+      padding: 0.5rem 0.6rem;
       border: none;
-      border-radius: 50px;
+      border-radius: 8px;
       background: #4caf50;
       color: #fff;
       font-weight: 600;
       cursor: pointer;
       transition: 0.3s ease;
+
       &:hover {
         background: #388e3c;
       }
     }
+  }
+
+  .filter {
+    display: flex;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+
+    select {
+      padding: 0.6rem 1rem;
+      border: 2px solid #ddd;
+      border-radius: 8px;
+      font-size: 1rem;
+      background: #fff;
+      cursor: pointer;
+      transition: border-color 0.2s ease;
+
+      &:hover {
+        border-color: rgba(34, 34, 96, 0.9);
+      }
+    }
+  }
+
+  .total {
+    font-size: 1.2rem;
+    font-weight: 600;
+    color: #d32f2f;
+    margin: 1rem 0;
+    text-align: right;
   }
 
   table {
@@ -292,8 +433,7 @@ const ExpenseStyled = styled.div`
     border-radius: 12px;
     overflow: hidden;
 
-    th,
-    td {
+    th, td {
       padding: 0.8rem 1rem;
       text-align: left;
       border-bottom: 1px solid #eee;
@@ -311,29 +451,24 @@ const ExpenseStyled = styled.div`
     .edit,
     .delete {
       border: none;
-      border-radius: 50px;
-      padding: 0.4rem 1rem;
-      font-weight: 600;
+      border-radius: 6px;
+      padding: 0.4rem 0.8rem;
+      font-weight: 500;
       cursor: pointer;
-      display: inline-flex;
-      align-items: center;
-      gap: 0.5rem;
+      font-size: 0.9rem;
+      transition: 0.3s ease;
+      color: #fff;
+      margin-right: 0.5rem; 
     }
 
     .edit {
-      background: #e3f2fd;
-      color: #1976d2;
-      &:hover {
-        background: #bbdefb;
-      }
+      background: #2196f3;
+      &:hover { background: #1976d2; }
     }
 
     .delete {
-      background: #ffebee;
-      color: #d32f2f;
-      &:hover {
-        background: #ffcdd2;
-      }
+      background: #f44336;
+      &:hover { background: #d32f2f; }
     }
   }
 
@@ -366,6 +501,13 @@ const ExpenseStyled = styled.div`
     text-align: center;
   }
 
+  .modal-content p {
+    font-size: 1rem;
+    color: #555;
+    margin-bottom: 1rem;
+    text-align: center;
+  }
+
   .modal-content input,
   .modal-content select {
     padding: 0.7rem 1rem;
@@ -383,7 +525,7 @@ const ExpenseStyled = styled.div`
 
   .modal-buttons {
     display: flex;
-    justify-content: flex-end;
+    justify-content: center;
     gap: 1rem;
     margin-top: 1rem;
   }
@@ -399,28 +541,19 @@ const ExpenseStyled = styled.div`
   }
 
   .modal-buttons button:first-child {
-    background: #4caf50;
-  }
-  .modal-buttons button:first-child:hover {
-    background: #388e3c;
+    background: #4caf50; /* Lưu hoặc Đồng ý */
+    &:hover { background: #388e3c; }
   }
 
   .modal-buttons button:last-child {
-    background: #9e9e9e;
-  }
-  .modal-buttons button:last-child:hover {
-    background: #757575;
+    background: #9e9e9e; /* Hủy */
+    &:hover { background: #757575; }
   }
 
   @keyframes fadeIn {
     from { opacity: 0; transform: translateY(-10px); }
     to { opacity: 1; transform: translateY(0); }
   }
-  .total {
-    font-size: 1.2rem;
-    font-weight: 600;
-    color: #d32f2f;
-    margin: 1rem 0;
-    text-align: right; /* hoặc left tùy bạn muốn */
-  }
 `;
+
+

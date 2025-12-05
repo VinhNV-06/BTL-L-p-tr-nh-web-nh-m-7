@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { addCategory, getCategories, updateCategory, deleteCategory } from "../api/categoryApi";
 import { AxiosError } from "axios";
 import styled from "styled-components";
+import { plus, edit, trash, save, cancel, agree} from "../utils/Icons";
 
 interface Category {
   _id: string;
@@ -86,7 +87,7 @@ const CategoryManager: React.FC = () => {
           value={newName}
           onChange={e => setNewName(e.target.value)}
         />
-        <button onClick={handleAdd}>Thêm</button>
+        <button onClick={handleAdd}>{plus} Thêm danh mục </button>
       </div>
       <table>
         <thead>
@@ -111,19 +112,19 @@ const CategoryManager: React.FC = () => {
               <td>
                 {editingId === c._id ? (
                   <>
-                    <button className="save" onClick={() => handleSave(c._id)}>Lưu</button>
-                    <button className="cancel" onClick={() => setEditingId(null)}>Hủy</button>
+                    <button className="save" onClick={() => handleSave(c._id)}>{save} Lưu</button>
+                    <button className="cancel" onClick={() => setEditingId(null)}>{cancel} Hủy</button>
                   </>
                 ) : deletingId === c._id ? (
                   <>
                     <span className="confirm-text">Bạn có xác nhận xoá?</span>
-                    <button className="confirm" onClick={() => confirmDelete(c._id)}>Đồng ý</button>
-                    <button className="cancel" onClick={() => setDeletingId(null)}>Hủy</button>
+                    <button className="confirm" onClick={() => confirmDelete(c._id)}>{agree} Đồng ý</button>
+                    <button className="cancel" onClick={() => setDeletingId(null)}>{cancel} Hủy</button>
                   </>
                 ) : (
                   <>
-                    <button className="edit" onClick={() => handleEditClick(c._id, c.name)}>Sửa</button>
-                    <button className="delete" onClick={() => handleDeleteClick(c._id)}>Xóa</button>
+                    <button className="edit" onClick={() => handleEditClick(c._id, c.name)}>{edit} Sửa</button>
+                    <button className="delete" onClick={() => handleDeleteClick(c._id)}>{trash} Xóa</button>
                   </>
                 )}
               </td>

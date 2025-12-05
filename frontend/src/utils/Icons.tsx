@@ -34,3 +34,15 @@ export const food: ReactElement = <i className="fa-solid fa-bowl-food"></i>
 export const medical: ReactElement = <i className="fa-solid fa-briefcase-medical"></i>
 export const tv: ReactElement = <i className="fa-solid fa-tv"></i>
 export const circle: ReactElement = <i className="fa-solid fa-circle-dot"></i>
+export const edit: ReactElement = <i className="fa-solid fa-pen-to-square"></i>
+export const save: ReactElement = <i className="fa-solid fa-floppy-disk"></i>
+export const cancel: ReactElement = <i className="fa-solid fa-ban"></i>
+export const agree: ReactElement = <i className="fa-solid fa-thumbs-up"></i>
+
+// Summary & stats icons
+export const totalExpense2: ReactElement = <i className="fa-solid fa-wallet"></i>         
+export const totalBudget: ReactElement = <i className="fa-solid fa-clipboard-check"></i>       
+export const budgetRemaining2: ReactElement = <i className="fa-solid fa-piggy-bank"></i>  
+export const budgetOver: ReactElement = <i className="fa-solid fa-arrow-up-right-dots"></i> 
+export const averageExpense2: ReactElement = <i className="fa-solid fa-scale-balanced"></i>   
+export const percentOver2: ReactElement = <i className="fa-solid fa-chart-line"></i>
