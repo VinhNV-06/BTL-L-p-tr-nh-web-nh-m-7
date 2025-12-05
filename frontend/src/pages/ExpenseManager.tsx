@@ -186,7 +186,7 @@ const ExpenseManager: React.FC = () => {
         <input
           name="amount"
           type="number"
-          placeholder="Số tiền"
+          placeholder="Số tiền chi tiêu"
           value={form.amount}
           onChange={handleChange}
         />
@@ -252,7 +252,7 @@ const ExpenseManager: React.FC = () => {
             <th>Số tiền</th>
             <th>Ngày</th>
             <th>Danh mục</th>
-            <th>Hành động</th>
+            <th>Thao tác</th>
           </tr>
         </thead>
         <tbody>
@@ -462,13 +462,13 @@ const ExpenseStyled = styled.div`
     }
 
     .edit {
-      background: #2196f3;
-      &:hover { background: #1976d2; }
+      background: #ffa502;
+      &:hover { background: #e67e22; }
     }
 
     .delete {
-      background: #f44336;
-      &:hover { background: #d32f2f; }
+      background: #ff4757;
+      &:hover { background: #ee2f3a; }
     }
   }
 

@@ -52,19 +52,19 @@ const HomeDashboard: React.FC = () => {
     fetchStats();
   }, []);
 
-  // Re-fetch budgets khi expenses hoặc year thay đổi
+  // Budgets khi expenses hoặc year thay đổi
   useEffect(() => {
     if (expenses.length > 0) {
       fetchBudgets();
     }
   }, [expenses, year]);
 
-  // Re-fetch stats khi năm thay đổi
+  // Stats khi năm thay đổi
   useEffect(() => {
     fetchStats();
   }, [year]);
 
-  // Fetch yearly stats (từ code mới)
+  // Yearly stats
   const fetchStats = async () => {
     try {
       const data = await getYearlyStats(year);
@@ -74,7 +74,7 @@ const HomeDashboard: React.FC = () => {
     }
   };
 
-  // Fetch budgets theo năm được chọn
+  // Budgets theo năm được chọn
 const fetchBudgets = async () => {
   try {
     const allMonthsBudgets: Budget[] = [];
@@ -159,7 +159,7 @@ const fetchBudgets = async () => {
   expensesByCategory.sort((a, b) => b.total - a.total);
   const topCategories = expensesByCategory.slice(0, 5);
 
-  // Tính tổng budget (từ code cũ)
+  // Tính tổng budget 
   const totalBudgetLimit = stats ? stats.totals.budget : 0;
   const totalBudgetSpent = stats ? stats.totals.spent : 0;
   const budgetRemaining = totalBudgetLimit - totalBudgetSpent;
@@ -247,8 +247,6 @@ const fetchBudgets = async () => {
               <span className="info-text">Trung bình / giao dịch</span>
             </div>
           </div>
-
-          
         </div>
         {stats && <YearSummary stats={stats} />}
 

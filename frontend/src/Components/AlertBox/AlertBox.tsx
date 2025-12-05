@@ -31,7 +31,6 @@ const AlertBox: React.FC<Props> = ({ stats }) => {
 
 export default AlertBox;
 
-// ✅ Styled-components
 const AlertWrapper = styled.div`
   margin-top: 20px;
   padding: 20px;

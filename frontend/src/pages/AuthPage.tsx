@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import styles from "./AuthPage.module.css"; // 👈 import CSS Module
+import styles from "./AuthPage.module.css";
 
 const API_URL = "http://localhost:5000/api/v1";
 

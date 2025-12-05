@@ -1,4 +1,3 @@
-/* Reset chỉ trong AuthPage */
 .cont * {
   margin: 0;
   padding: 0;
@@ -6,7 +5,6 @@
   font-family: 'Nunito', sans-serif;
 }
 
-/* Nền riêng cho AuthPage - FIX: loại bỏ viền trắng */
 .authWrapper {
   position: fixed;
   top: 0;
@@ -20,7 +18,6 @@
   overflow: auto;
 }
 
-/* Container chính */
 .cont {
   overflow: hidden;
   position: relative;
@@ -31,7 +28,6 @@
               0 15px 12px rgba(0, 0, 0, 0.22);
 }
 
-/* Reset input và button */
 .cont input,
 .cont button {
   border: none;
@@ -39,12 +35,11 @@
   background: none;
 }
 
-/* Form */
 .form {
   position: relative;
   width: 640px;
   height: 100%;
-  padding: 40px 30px; /* FIX: giảm padding-top từ 50px xuống 40px */
+  padding: 40px 30px; 
   transition: transform 1.2s ease-in-out, -webkit-transform 1.2s ease-in-out;
 }
 
@@ -52,22 +47,20 @@ h2 {
   width: 100%;
   font-size: 30px;
   text-align: center;
-  margin-bottom: 30px; /* FIX: thêm khoảng cách dưới tiêu đề */
+  margin-bottom: 30px; 
 }
 
-/* FIX: Label căn giữa - dùng flexbox */
 label {
   display: flex;
   flex-direction: column;
   align-items: center;
   width: 100%;
-  margin: 25px 0 0 0; /* FIX: tăng từ 15px lên 25px - khoảng cách giữa các label */
+  margin: 25px 0 0 0; 
   text-align: center;
 }
 
-/* FIX: Label đầu tiên (EMAIL) có khoảng cách lớn hơn */
 label:first-of-type {
-  margin-top: 35px; /* FIX: tăng khoảng cách cho label đầu tiên */
+  margin-top: 35px;
 }
 
 label span {
@@ -75,14 +68,13 @@ label span {
   font-weight: 600;
   color: #505f75;
   text-transform: uppercase;
-  margin-bottom: 15px; /* FIX: tăng từ 10px lên 15px - khoảng cách giữa label và input */
+  margin-bottom: 15px; 
 }
 
-/* FIX: Input căn giữa hoàn hảo */
 .cont input {
   display: block;
   width: 260px;
-  margin: 0 0 20px 0; /* FIX: thêm margin-bottom 20px để tạo khoảng cách với label tiếp theo */
+  margin: 0 0 20px 0;
   padding: 10px 10px;
   font-size: 16px;
   border: none;
@@ -93,15 +85,13 @@ label span {
   transition: border-bottom 0.3s ease;
 }
 
-/* FIX: Hiệu ứng khi focus vào input */
 .cont input:focus {
   border-bottom: 2px solid #ff6b9d;
 }
 
-/* Button */
 .cont button {
   display: block;
-  margin: 50px auto 0 auto; /* FIX: thêm margin-top vào đây */
+  margin: 50px auto 0 auto; 
   width: 260px;
   height: 36px;
   border-radius: 30px;
@@ -111,7 +101,7 @@ label span {
 }
 
 .submit {
-  margin-top: 25px !important; /* FIX: thêm !important để override */
+  margin-top: 25px !important; 
   margin-bottom: 20px !important;
   text-transform: uppercase;
   font-weight: 600;
@@ -130,9 +120,8 @@ label span {
   cursor: not-allowed;
 }
 
-/* Forgot password */
 .forgot-pass {
-  margin-top: 10px; /* FIX: giảm từ 15px xuống 10px */
+  margin-top: 10px; 
   text-align: center;
   font-size: 14px;
   font-weight: 600;
@@ -144,11 +133,10 @@ label span {
   color: rgb(172, 0, 0);
 }
 
-/* Social media */
 .social-media {
   width: 100%;
   text-align: center;
-  margin-top: 15px; /* FIX: giảm từ 20px xuống 15px */
+  margin-top: 15px; 
 }
 
 .social-media ul {
@@ -158,7 +146,7 @@ label span {
 .social-media ul li {
   display: inline-block;
   cursor: pointer;
-  margin: 15px 15px; /* FIX: giảm từ 25px xuống 15px */
+  margin: 15px 15px; 
 }
 
 .social-media img {
@@ -166,7 +154,6 @@ label span {
   height: 40px;
 }
 
-/* Panel phải */
 .sub-cont {
   overflow: hidden;
   position: absolute;
@@ -184,7 +171,6 @@ label span {
           transform: translate3d(-640px, 0, 0);
 }
 
-/* Ảnh nền */
 .img {
   overflow: hidden;
   z-index: 2;
@@ -223,7 +209,6 @@ label span {
           transform: translate3d(640px, 0, 0);
 }
 
-/* Text ảnh */
 .img-text {
   z-index: 2;
   position: absolute;
@@ -263,7 +248,7 @@ label span {
 
 /* Form đăng nhập */
 .sign-in {
-  padding-top: 40px; /* FIX: giảm từ 65px xuống 40px để tạo thêm không gian */
+  padding-top: 40px; 
   -webkit-transition-timing-function: ease-out;
           transition-timing-function: ease-out;
 }
@@ -348,7 +333,6 @@ label span {
           transform: translate3d(0, 0, 0);
 }
 
-/* Error text */
 .error-text {
   color: red;
   font-size: 12px;
@@ -356,7 +340,6 @@ label span {
   margin-top: 10px;
 }
 
-/* Spinner */
 .spinner {
   border: 3px solid #fff;
   border-top: 3px solid #ff6b9d;

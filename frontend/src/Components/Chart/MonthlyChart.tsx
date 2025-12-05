@@ -21,13 +21,16 @@ const MonthlyChart: React.FC<Props> = ({ data }) => {
       <ResponsiveContainer width="100%" height={400}>
         <BarChart
           data={data}
-          margin={{ top: 20, right: 30, left: 20, bottom: 5 }}
+          margin={{ top: 10, right: 30, left: 20, bottom: 10 }}
         >
-          <CartesianGrid strokeDasharray="3 3" />
+          <CartesianGrid strokeDasharray="5 4" />
           <XAxis dataKey="month" tickFormatter={(m) => `Tháng ${m}`} />
-          <YAxis />
+          <YAxis
+            tickFormatter={(value) => value.toLocaleString("vi-VN")}
+          />
           <Tooltip
             formatter={(value: number) => value.toLocaleString("vi-VN") + " ₫"}
+            labelFormatter={(label) => `Tháng ${label}`}
           />
 
           <Bar dataKey="spent" name="Đã chi" fill="#4caf50" />
