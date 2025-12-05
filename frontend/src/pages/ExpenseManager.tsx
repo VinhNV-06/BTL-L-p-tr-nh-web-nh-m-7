@@ -462,13 +462,13 @@ const ExpenseStyled = styled.div`
     }
 
     .edit {
-      background: #2196f3;
-      &:hover { background: #1976d2; }
+      background: #ffa502;
+      &:hover { background: #e67e22; }
     }
 
     .delete {
-      background: #f44336;
-      &:hover { background: #d32f2f; }
+      background: #ff4757;
+      &:hover { background: #ee2f3a; }
     }
   }
 

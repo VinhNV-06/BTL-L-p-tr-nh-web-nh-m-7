@@ -222,15 +222,15 @@ const CategoryStyled = styled.div`
     }
 
     .edit {
-      background: #2196f3;
+      background: #ffa502;
       color: #fff;
-      &:hover { background: #1976d2; }
+      &:hover { background: #e67e22; }
     }
 
     .delete {
-      background: #f44336;
+      background: #ff4757;
       color: #fff;
-      &:hover { background: #d32f2f; }
+      &:hover { background: #ee2f3a; }
     }
 
     .save {
@@ -246,9 +246,9 @@ const CategoryStyled = styled.div`
     }
 
     .confirm {
-      background: #f44336;
+      background: #4caf50;
       color: #fff;
-      &:hover { background: #d32f2f; }
+      &:hover { background: #388e3c; }
     }
 
     .confirm-text {
