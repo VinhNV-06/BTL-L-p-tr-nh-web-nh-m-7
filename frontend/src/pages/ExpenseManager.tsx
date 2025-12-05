@@ -186,7 +186,7 @@ const ExpenseManager: React.FC = () => {
         <input
           name="amount"
           type="number"
-          placeholder="Số tiền"
+          placeholder="Số tiền chi tiêu"
           value={form.amount}
           onChange={handleChange}
         />
@@ -252,7 +252,7 @@ const ExpenseManager: React.FC = () => {
             <th>Số tiền</th>
             <th>Ngày</th>
             <th>Danh mục</th>
-            <th>Hành động</th>
+            <th>Thao tác</th>
           </tr>
         </thead>
         <tbody>
