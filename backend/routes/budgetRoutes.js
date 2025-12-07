@@ -15,7 +15,7 @@ router.post("/budgets", addBudget);
 // Lấy tất cả định mức
 router.get("/budgets", getBudgets);
 
-// Lấy định mức theo tháng/năm (query: ?month=11&year=2025)
+// Lấy định mức theo tháng/năm 
 router.get("/budgets/by-month", getBudgetsByMonth);
 
 // Cập nhật định mức
