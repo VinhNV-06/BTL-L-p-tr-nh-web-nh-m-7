@@ -10,14 +10,13 @@ const {
   getTotalExpense,
 } = require("../controllers/expense");
 
-// ✅ CRUD cho Expense
-router.post("/expenses", addExpense);          // Thêm chi phí mới
-router.get("/expenses", getExpense);           // Lấy toàn bộ danh sách chi phí
-router.get("/expenses/by-month-year", getExpenseByMonthYear); // Lấy chi phí theo tháng/năm
-router.put("/expenses/:id", updateExpense);    // Cập nhật chi phí
-router.delete("/expenses/:id", deleteExpense); // Xóa chi phí
+router.post("/expenses", addExpense);     
+router.get("/expenses", getExpense);           
+router.get("/expenses/by-month-year", getExpenseByMonthYear); 
+router.put("/expenses/:id", updateExpense);    
+router.delete("/expenses/:id", deleteExpense); 
 
-// ✅ Tổng chi phí
+// Tổng chi phí
 router.get("/expenses/total", getTotalExpense);
 
 module.exports = router;

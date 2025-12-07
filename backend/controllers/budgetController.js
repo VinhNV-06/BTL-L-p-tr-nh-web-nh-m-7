@@ -10,7 +10,7 @@ exports.addBudget = async (req, res) => {
       return res.status(400).json({ message: "Thiếu dữ liệu cần thiết" });
     }
 
-    // 🔎 Kiểm tra trùng: cùng danh mục, cùng tháng, cùng năm
+    // Kiểm tra trùng: cùng danh mục, cùng tháng, cùng năm
     const existingBudget = await Budget.findOne({
       category: categoryId,
       month,

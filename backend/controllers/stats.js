@@ -1,7 +1,7 @@
 const Expense = require("../models/ExpenseModel");  
 const Budget = require("../models/BudgetModel");     
 
-// ✅ Lấy thống kê chi tiêu theo năm
+// Lấy thống kê chi tiêu theo năm
 exports.getYearlyStats = async (req, res) => {
   const year = Number(req.query.year);
   if (!year) {

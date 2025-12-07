@@ -18,11 +18,11 @@ const ExpenseSchema = new mongoose.Schema(
     },
     month: {
       type: Number,
-      required: true, // ✅ thêm tháng
+      required: true,
     },
     year: {
       type: Number,
-      required: true, // ✅ thêm năm
+      required: true, 
     },
     category: {
       type: mongoose.Schema.Types.ObjectId,
