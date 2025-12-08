@@ -1,8 +1,7 @@
 import React, { useState, ReactNode, useEffect } from "react";
-import axios, { AxiosError } from "axios";
+import { AxiosError } from "axios";
 import { Transaction, TransactionInput, GlobalContextType } from "./types";
-
-const BASE_URL = "http://localhost:5000/api/v1/";
+import api from "./apiInstance"; 
 
 interface GlobalProviderProps {
   children: ReactNode;
@@ -19,7 +18,7 @@ export const GlobalProvider: React.FC<GlobalProviderProps> = ({ children }) => {
   // ---------- Expense ----------
   const addExpense = async (expense: TransactionInput) => {
     try {
-      await axios.post(`${BASE_URL}expenses`, expense);
+      await api.post("expenses", expense); 
       await getExpenses();
     } catch (err: unknown) {
       const error = err as AxiosError<{ message: string }>;
@@ -29,7 +28,7 @@ export const GlobalProvider: React.FC<GlobalProviderProps> = ({ children }) => {
 
   const getExpenses = async () => {
     try {
-      const response = await axios.get<Transaction[]>(`${BASE_URL}expenses`);
+      const response = await api.get<Transaction[]>("expenses"); 
       setExpenses(response.data);
     } catch (err) {
       console.error(err);
@@ -38,7 +37,7 @@ export const GlobalProvider: React.FC<GlobalProviderProps> = ({ children }) => {
 
   const deleteExpense = async (id: string) => {
     try {
-      await axios.delete(`${BASE_URL}expenses/${id}`);
+      await api.delete(`expenses/${id}`);
       await getExpenses();
     } catch (err) {
       console.error(err);

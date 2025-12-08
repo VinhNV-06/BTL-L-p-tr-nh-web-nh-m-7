@@ -2,26 +2,38 @@ import axios from "axios";
 
 const API_URL = "/api/v1";
 
+const api = axios.create({
+  baseURL: API_URL,
+});
+
+api.interceptors.request.use((config) => {
+  const token = localStorage.getItem("token");
+  if (token) {
+    config.headers.Authorization = `Bearer ${token}`;
+  }
+  return config;
+});
+
 // Lấy tất cả định mức
 export const getBudgets = () => {
-  return axios.get(`${API_URL}/budgets`);
+  return api.get("/budgets");
 };
 
 // Lấy định mức theo tháng/năm
 export const getBudgetsByMonth = (month: number, year: number) => {
-  return axios.get(`${API_URL}/budgets/by-month`, {
+  return api.get("/budgets/by-month", {
     params: { month, year },
   });
 };
 
 // Thêm định mức mới
 export const addBudget = (budget: {
-  categoryId: string;   
+  categoryId: string;
   limit: number;
   month: number;
   year: number;
 }) => {
-  return axios.post(`${API_URL}/budgets`, budget);
+  return api.post("/budgets", budget);
 };
 
 // Cập nhật định mức
@@ -33,12 +45,12 @@ export const updateBudget = (
     year: number;
   }
 ) => {
-  return axios.put(`${API_URL}/budgets/${id}`, budget);
+  return api.put(`/budgets/${id}`, budget);
 };
 
 // Xóa định mức
 export const deleteBudget = (id: string) => {
-  return axios.delete(`${API_URL}/budgets/${id}`);
+  return api.delete(`/budgets/${id}`);
 };
 
 export interface Budget {

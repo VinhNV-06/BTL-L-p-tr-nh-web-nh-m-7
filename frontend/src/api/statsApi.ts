@@ -20,9 +20,21 @@ export interface YearlyStats {
   };
 }
 
-// Gọi API lấy thống kê theo năm
+const api = axios.create({
+  baseURL: "/api/v1",
+});
+
+api.interceptors.request.use((config) => {
+  const token = localStorage.getItem("token");
+  if (token) {
+    config.headers.Authorization = `Bearer ${token}`;
+  }
+  return config;
+});
+
+// Gọi API lấy thống kê theo năm 
 export const getYearlyStats = async (year: number) => {
-  const res = await axios.get<YearlyStats>("/api/v1/stats/year", {
+  const res = await api.get<YearlyStats>("/stats/year", {
     params: { year },
   });
   return res.data;
