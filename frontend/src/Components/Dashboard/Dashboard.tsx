@@ -7,6 +7,7 @@ import styled from "styled-components";
 import { useGlobalContext } from "../../context/useGlobalContext";
 import { InnerLayout } from "../../styles/Layouts";
 import axios from "axios";
+import api from "../../context/apiInstance";
 import { formatAmount } from "../../utils/formatAmount";
 import {
   totalExpense2,
@@ -80,9 +81,10 @@ const fetchBudgets = async () => {
     const allMonthsBudgets: Budget[] = [];
     for (let month = 1; month <= 12; month++) {
       try {
-        const response = await axios.get<Budget[]>(
-          `http://localhost:5000/api/v1/budgets/by-month?month=${month}&year=${year}`
-        );
+        const response = await api.get<Budget[]>("/budgets/by-month", {
+          params: { month, year },
+        });
+
         allMonthsBudgets.push(...response.data);
       } catch (error: unknown) {
         // Tháng không có budget thì bỏ qua

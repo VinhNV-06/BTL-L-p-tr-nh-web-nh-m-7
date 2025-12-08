@@ -20,6 +20,13 @@ const BudgetSchema = new mongoose.Schema(
       type: Number,
       required: true,
     },
+
+    // Liên kết với user
+    userId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "User",
+      required: true,
+    },
   },
   { timestamps: true }
 );

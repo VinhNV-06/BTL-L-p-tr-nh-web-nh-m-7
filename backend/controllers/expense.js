@@ -27,20 +27,22 @@ exports.addExpense = async (req, res) => {
       date: d,
       month: d.getMonth() + 1,
       year: d.getFullYear(),
+      userId: req.userId, 
     });
 
     const savedExpense = await expense.save();
-    res.status(201).json(savedExpense);
+    const populated = await savedExpense.populate("category", "name");
+    res.status(201).json(populated);
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: "Server Error" });
   }
 };
 
-// Lấy toàn bộ chi phí
+// Lấy toàn bộ chi phí của user
 exports.getExpense = async (req, res) => {
   try {
-    const expenses = await Expense.find()
+    const expenses = await Expense.find({ userId: req.userId })
       .sort({ createdAt: -1 })
       .populate("category", "name");
 
@@ -51,7 +53,7 @@ exports.getExpense = async (req, res) => {
   }
 };
 
-// Lấy chi phí theo tháng/năm
+// Lấy chi phí theo tháng/năm của user
 exports.getExpenseByMonthYear = async (req, res) => {
   const { month, year } = req.query;
 
@@ -61,6 +63,7 @@ exports.getExpenseByMonthYear = async (req, res) => {
     }
 
     const expenses = await Expense.find({
+      userId: req.userId,
       month: Number(month),
       year: Number(year),
     })
@@ -74,7 +77,7 @@ exports.getExpenseByMonthYear = async (req, res) => {
   }
 };
 
-// Cập nhật chi phí
+// Cập nhật chi phí của user
 exports.updateExpense = async (req, res) => {
   const { id } = req.params;
   const { amount, categoryId, description, date } = req.body;
@@ -89,8 +92,8 @@ exports.updateExpense = async (req, res) => {
 
     const d = new Date(date);
 
-    const updated = await Expense.findByIdAndUpdate(
-      id,
+    const updated = await Expense.findOneAndUpdate(
+      { _id: id, userId: req.userId }, 
       {
         amount,
         category: categoryId,
@@ -112,12 +115,12 @@ exports.updateExpense = async (req, res) => {
   }
 };
 
-// Xóa chi phí
+// Xóa chi phí của user
 exports.deleteExpense = async (req, res) => {
   const { id } = req.params;
 
   try {
-    const deleted = await Expense.findByIdAndDelete(id);
+    const deleted = await Expense.findOneAndDelete({ _id: id, userId: req.userId });
     if (!deleted) {
       return res.status(404).json({ message: "Không tìm thấy khoản chi" });
     }
@@ -128,10 +131,15 @@ exports.deleteExpense = async (req, res) => {
   }
 };
 
-// Tổng chi phí
+// Tổng chi phí của user (có thể lọc thêm month/year)
 exports.getTotalExpense = async (req, res) => {
   try {
-    const expenses = await Expense.find();
+    const { month, year } = req.query;
+    const filter = { userId: req.userId };
+    if (month) filter.month = Number(month);
+    if (year) filter.year = Number(year);
+
+    const expenses = await Expense.find(filter);
     const total = expenses.reduce((acc, item) => acc + item.amount, 0);
 
     res.status(200).json({ total });

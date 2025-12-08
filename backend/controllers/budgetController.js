@@ -10,8 +10,9 @@ exports.addBudget = async (req, res) => {
       return res.status(400).json({ message: "Thiếu dữ liệu cần thiết" });
     }
 
-    // Kiểm tra trùng: cùng danh mục, cùng tháng, cùng năm
+    // Kiểm tra trùng: cùng user, cùng danh mục
     const existingBudget = await Budget.findOne({
+      userId: req.userId,
       category: categoryId,
       month,
       year,
@@ -29,6 +30,7 @@ exports.addBudget = async (req, res) => {
       limit,
       month,
       year,
+      userId: req.userId, 
     });
 
     const savedBudget = await budget.save();
@@ -39,35 +41,39 @@ exports.addBudget = async (req, res) => {
   }
 };
 
-// Lấy danh sách định mức
+// Lấy danh sách định mức của user
 exports.getBudgets = async (req, res) => {
   try {
-    const budgets = await Budget.find().populate("category", "name");
+    const budgets = await Budget.find({ userId: req.userId }).populate("category", "name");
     res.status(200).json(budgets);
   } catch (error) {
     res.status(500).json({ message: "Server Error" });
   }
 };
 
-// Lấy định mức theo tháng/năm
+// Lấy định mức theo tháng/năm của user
 exports.getBudgetsByMonth = async (req, res) => {
   const { month, year } = req.query;
   try {
-    const budgets = await Budget.find({ month, year }).populate("category", "name");
+    const budgets = await Budget.find({
+      userId: req.userId,
+      month,
+      year,
+    }).populate("category", "name");
     res.status(200).json(budgets);
   } catch (error) {
     res.status(500).json({ message: "Server Error" });
   }
 };
 
-// Cập nhật định mức
+// Cập nhật định mức của user
 exports.updateBudget = async (req, res) => {
   const { id } = req.params;
   const { limit, month, year } = req.body;
 
   try {
-    const updated = await Budget.findByIdAndUpdate(
-      id,
+    const updated = await Budget.findOneAndUpdate(
+      { _id: id, userId: req.userId }, 
       { limit, month, year },
       { new: true }
     ).populate("category", "name");
@@ -82,12 +88,12 @@ exports.updateBudget = async (req, res) => {
   }
 };
 
-// Xóa định mức
+// Xóa định mức của user
 exports.deleteBudget = async (req, res) => {
   const { id } = req.params;
 
   try {
-    const deleted = await Budget.findByIdAndDelete(id);
+    const deleted = await Budget.findOneAndDelete({ _id: id, userId: req.userId });
     if (!deleted) {
       return res.status(404).json({ message: "Không tìm thấy định mức" });
     }
@@ -96,4 +102,3 @@ exports.deleteBudget = async (req, res) => {
     res.status(500).json({ message: "Server Error" });
   }
 };
-

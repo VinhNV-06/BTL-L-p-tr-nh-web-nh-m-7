@@ -1,7 +1,7 @@
-const Expense = require("../models/ExpenseModel");  
-const Budget = require("../models/BudgetModel");     
+const mongoose = require("mongoose");
+const Expense = require("../models/ExpenseModel");
+const Budget = require("../models/BudgetModel");
 
-// Lấy thống kê chi tiêu theo năm
 exports.getYearlyStats = async (req, res) => {
   const year = Number(req.query.year);
   if (!year) {
@@ -11,26 +11,38 @@ exports.getYearlyStats = async (req, res) => {
   try {
     // 1) Tổng chi tiêu theo tháng
     const expensesAgg = await Expense.aggregate([
-      { $match: { year } },
+      {
+        $match: {
+          userId: new mongoose.Types.ObjectId(req.userId),
+          year,
+        },
+      },
       { $group: { _id: "$month", spent: { $sum: "$amount" } } },
       { $project: { month: "$_id", spent: 1, _id: 0 } },
     ]);
 
     // 2) Tổng định mức theo tháng
     const budgetsAgg = await Budget.aggregate([
-      { $match: { year } },
+      {
+        $match: {
+          userId: new mongoose.Types.ObjectId(req.userId),
+          year,
+        },
+      },
       { $group: { _id: "$month", budget: { $sum: "$limit" } } },
       { $project: { month: "$_id", budget: 1, _id: 0 } },
     ]);
 
-    // 3) Hợp nhất dữ liệu 12 tháng
+    // 3) Gộp dữ liệu 12 tháng
     const months = Array.from({ length: 12 }, (_, i) => i + 1).map((m) => {
       const e = expensesAgg.find((x) => x.month === m);
       const b = budgetsAgg.find((x) => x.month === m);
+
       const spent = e?.spent || 0;
       const budget = b?.budget || 0;
       const over = spent > budget ? spent - budget : 0;
       const percent = budget ? Math.round((spent / budget) * 100) : 0;
+
       return { month: m, spent, budget, over, percent };
     });
 

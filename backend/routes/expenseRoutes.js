@@ -1,5 +1,6 @@
 const express = require("express");
 const router = express.Router();
+const authMiddleware = require("../middleware/authMiddleware"); // ✅ import middleware
 
 const {
   addExpense,
@@ -10,13 +11,11 @@ const {
   getTotalExpense,
 } = require("../controllers/expense");
 
-router.post("/expenses", addExpense);     
-router.get("/expenses", getExpense);           
-router.get("/expenses/by-month-year", getExpenseByMonthYear); 
-router.put("/expenses/:id", updateExpense);    
-router.delete("/expenses/:id", deleteExpense); 
-
-// Tổng chi phí
-router.get("/expenses/total", getTotalExpense);
+router.post("/expenses", authMiddleware, addExpense);     
+router.get("/expenses", authMiddleware, getExpense);           
+router.get("/expenses/by-month-year", authMiddleware, getExpenseByMonthYear); 
+router.put("/expenses/:id", authMiddleware, updateExpense);    
+router.delete("/expenses/:id", authMiddleware, deleteExpense); 
+router.get("/expenses/total", authMiddleware, getTotalExpense);
 
 module.exports = router;

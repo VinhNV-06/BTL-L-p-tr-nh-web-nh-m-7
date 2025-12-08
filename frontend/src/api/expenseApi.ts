@@ -2,14 +2,26 @@ import axios from "axios";
 
 const API_URL = "/api/v1";
 
+const api = axios.create({
+  baseURL: API_URL,
+});
+
+api.interceptors.request.use((config) => {
+  const token = localStorage.getItem("token");
+  if (token) {
+    config.headers.Authorization = `Bearer ${token}`;
+  }
+  return config;
+});
+
 // Lấy danh sách chi phí toàn bộ
 export const getExpenses = () => {
-  return axios.get(`${API_URL}/expenses`);
+  return api.get("/expenses");
 };
 
 // Lấy chi phí theo tháng/năm
 export const getExpensesByMonthYear = (month: number, year: number) => {
-  return axios.get(`${API_URL}/expenses/by-month-year`, {
+  return api.get("/expenses/by-month-year", {
     params: { month, year },
   });
 };
@@ -21,7 +33,7 @@ export const addExpense = (expense: {
   date: string;
   categoryId: string;
 }) => {
-  return axios.post(`${API_URL}/expenses`, expense);
+  return api.post("/expenses", expense);
 };
 
 // Cập nhật chi phí
@@ -34,17 +46,17 @@ export const updateExpense = (
     categoryId: string;
   }
 ) => {
-  return axios.put(`${API_URL}/expenses/${id}`, expense);
+  return api.put(`/expenses/${id}`, expense);
 };
 
 // Xóa chi phí
 export const deleteExpense = (id: string) => {
-  return axios.delete(`${API_URL}/expenses/${id}`);
+  return api.delete(`/expenses/${id}`);
 };
 
 // Lấy tổng chi phí (có thể lọc theo tháng/năm)
 export const getTotalExpense = (month?: number, year?: number) => {
-  return axios.get(`${API_URL}/expenses/total`, {
+  return api.get("/expenses/total", {
     params: { month, year },
   });
 };
