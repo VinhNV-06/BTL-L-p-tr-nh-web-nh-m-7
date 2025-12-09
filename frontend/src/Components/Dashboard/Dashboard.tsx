@@ -265,7 +265,7 @@ const fetchBudgets = async () => {
           {/* Budget Tracking */}
           <div className="budget-section">
             <div className="section-header">
-              <h2>Theo Dõi Định Mức</h2>
+              <h2 style={{ fontSize: 22 }}>Theo Dõi Định Mức</h2>
               <span className="month-label">Năm {year}</span>
             </div>
             <div className="budget-list">
@@ -530,6 +530,7 @@ const DashboardStyled = styled.div`
         background: rgba(34, 34, 96, 0.05);
         padding: 0.5rem 1rem;
         border-radius: 20px;
+        margin-left: 0.3rem;
       }
     }
 
@@ -549,7 +550,7 @@ const DashboardStyled = styled.div`
       box-shadow: 0px 1px 15px rgba(0, 0, 0, 0.06);
       border-radius: 20px;
       padding: 1.5rem;
-      max-height: 500px;
+      max-height: 600px;
       overflow-y: auto;
 
       &::-webkit-scrollbar {
@@ -755,6 +756,11 @@ const DashboardStyled = styled.div`
       display: flex;
       flex-direction: column;
       gap: 1rem;
+      padding: 1.5rem;
+      background: #fcf6f9;
+      border: 2px solid #ffffff;
+      box-shadow: 0px 1px 15px rgba(0, 0, 0, 0.06);
+      border-radius: 20px;
 
       .stat-box {
         background: #fcf6f9;

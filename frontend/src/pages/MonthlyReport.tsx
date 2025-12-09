@@ -130,6 +130,7 @@ const MonthlyReport: React.FC = () => {
           (() => {
             const percent = totalLimit ? Math.round((totalSpent / totalLimit) * 100) : 0;
             const overLimit = totalSpent > totalLimit;
+            const remaining = totalLimit - totalSpent; 
             return (
               <ProgressCard>
                 <h4>Tổng chi tiêu tháng {month}/{year}</h4>
@@ -143,6 +144,12 @@ const MonthlyReport: React.FC = () => {
                   Đã chi: {totalSpent.toLocaleString()} ₫ / Định mức: {totalLimit.toLocaleString()} ₫
                   {overLimit && <span className="warning">⚠️ Vượt định mức</span>}
                 </p>
+                <p>
+                  Số tiền còn lại:{" "}
+                  <span style={{ color: remaining < 0 ? "red" : "green", fontWeight: 600 }}>
+                    {remaining.toLocaleString()} ₫
+                  </span>
+                </p>
               </ProgressCard>
             );
           })()
@@ -152,6 +159,7 @@ const MonthlyReport: React.FC = () => {
             if (!cat) return null;
             const percent = cat.limit ? Math.round((cat.spent / cat.limit) * 100) : 0;
             const overLimit = cat.spent > cat.limit;
+            const remaining = cat.limit - cat.spent; 
             return (
               <ProgressCard>
                 <h4>{cat.name}</h4>
@@ -164,6 +172,12 @@ const MonthlyReport: React.FC = () => {
                 <p>
                   Đã chi: {cat.spent.toLocaleString()} ₫ / Định mức: {cat.limit.toLocaleString()} ₫
                   {overLimit && <span className="warning">⚠️ Vượt định mức</span>}
+                </p>
+                <p>
+                  Số tiền còn lại:{" "}
+                  <span style={{ color: remaining < 0 ? "red" : "green", fontWeight: 600 }}>
+                    {remaining.toLocaleString()} ₫
+                  </span>
                 </p>
               </ProgressCard>
             );
