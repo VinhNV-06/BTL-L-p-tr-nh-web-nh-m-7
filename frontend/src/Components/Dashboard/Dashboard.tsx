@@ -763,7 +763,7 @@ const DashboardStyled = styled.div`
       border-radius: 20px;
 
       .stat-box {
-        background: #fcf6f9;
+        background: #ffffffff;
         border: 2px solid #ffffff;
         box-shadow: 0px 1px 15px rgba(0, 0, 0, 0.06);
         border-radius: 20px;

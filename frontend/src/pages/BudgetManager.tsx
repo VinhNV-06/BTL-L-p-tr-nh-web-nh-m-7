@@ -4,7 +4,7 @@ import { createPortal } from "react-dom";
 import BudgetForm from "../Components/Budget/BudgetForm";
 import { getBudgetsByMonth, deleteBudget, updateBudget } from "../api/budgetApi";
 import type { Budget } from "../api/budgetApi";
-import { edit, save, cancel, agree} from "../utils/Icons";
+import { edit, save, cancel, agree, trash} from "../utils/Icons";
 
 const BudgetManager: React.FC = () => {
   const [budgets, setBudgets] = useState<Budget[]>([]);
@@ -167,7 +167,7 @@ const BudgetManager: React.FC = () => {
                     className="delete-btn"
                     onClick={() => handleDeleteClick(budget._id)}
                   >
-                    {cancel} Xóa
+                    {trash} Xóa
                   </button>
                 </div>
               </BudgetItem>
@@ -176,7 +176,7 @@ const BudgetManager: React.FC = () => {
         </ListSection>
       </ContentWrapper>
 
-      {/* ✅ Modal cập nhật */}
+      {/* Modal cập nhật */}
       {showModal && editingBudget &&
         createPortal(
           <ModalOverlay>
@@ -260,7 +260,11 @@ const FormSection = styled.div`
   height: fit-content;
 `;
 
-const ListSection = styled.div``;
+const ListSection = styled.div`
+  border-radius: 20px;
+  padding: 2rem;
+  height: fit-content;
+`;
 
 const SectionTitle = styled.h2`
   font-size: 1.5rem;
@@ -296,6 +300,7 @@ const BudgetList = styled.div`
 
 const BudgetItem = styled.div`
   background: #fcf6f9;
+  border: 2px solid #ffffff;
   border-radius: 15px;
   padding: 1.5rem;
   box-shadow: 0px 1px 15px rgba(0, 0, 0, 0.06);
@@ -348,6 +353,7 @@ const BudgetItem = styled.div`
       display: flex;
       align-items: center;
       justify-content: center;
+      gap: 5px;
       white-space: nowrap;
       transition: background 0.2s ease;
     }

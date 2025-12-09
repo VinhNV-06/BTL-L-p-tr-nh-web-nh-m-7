@@ -1,5 +1,6 @@
 import React from "react";
 import styled from "styled-components";
+import { dateFormat } from "../../utils/dateFormat";
 
 interface Transaction {
   _id?: string;
@@ -54,7 +55,7 @@ const TransactionList: React.FC<TransactionListProps> = ({
 
             return (
               <tr key={tx._id || `${tx.date}-${tx.amount}`}>
-                <td>{tx.date.slice(0, 10)}</td>
+                <td>{dateFormat(tx.date)}</td>
                 <td>{categoryName}</td>
                 <td className={overLimit ? "over" : "ok"}>{displayAmount}</td>
               </tr>
@@ -68,7 +69,6 @@ const TransactionList: React.FC<TransactionListProps> = ({
 
 export default TransactionList;
 
-// ✅ CSS đẹp hơn với styled-components
 const Wrapper = styled.div`
   margin-top: 3rem;
 

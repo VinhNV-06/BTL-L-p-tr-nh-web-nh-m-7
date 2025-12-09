@@ -93,7 +93,7 @@ const CategoryManager: React.FC = () => {
         <thead>
           <tr>
             <th>Tên danh mục</th>
-            <th>Hành động</th>
+            <th>Thao tác</th>
           </tr>
         </thead>
         <tbody>
