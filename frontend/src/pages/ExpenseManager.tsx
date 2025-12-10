@@ -13,6 +13,7 @@ import { formatAmount } from "../utils/formatAmount";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { plus, edit, trash, save, cancel, agree } from "../utils/Icons";
+import { getBudgetsByMonth } from "../api/budgetApi";
 
 interface Expense {
   _id: string;
@@ -23,6 +24,17 @@ interface Expense {
     _id: string;
     name: string;
   };
+}
+
+export interface Budget {
+  _id: string;
+  category: {
+    _id: string;
+    name: string;
+  };
+  limit: number;
+  month: number;
+  year: number;
 }
 
 interface Category {
@@ -111,15 +123,41 @@ const ExpenseManager: React.FC = () => {
         amount: Number(form.amount),
       });
 
-      const cat = categories.find(c => c._id === form.categoryId) ?? { _id: form.categoryId, name: "Khác" };
+      const cat =
+        categories.find((c) => c._id === form.categoryId) ?? {
+          _id: form.categoryId,
+          name: "Khác",
+        };
       const newExpense = { ...res.data, category: cat };
 
-      setExpenses(prev => {
+      setExpenses((prev) => {
         const next = [...prev, newExpense];
         const filtered = filterByMonthYear(next);
         setTotalExpense({ total: computeTotal(filtered) });
         return next;
       });
+
+      // Kiểm tra định mức cho tháng/năm hiện tại
+      try {
+        const expenseDate = new Date(newExpense.date);
+        const month = expenseDate.getMonth() + 1;
+        const year = expenseDate.getFullYear();
+
+        const budgetsRes = await getBudgetsByMonth(month, year);
+        const budgets: Budget[] = budgetsRes.data;
+
+        const hasBudget = budgets.some(
+          (b) => b.category?._id === form.categoryId
+        );
+
+        if (!hasBudget) {
+          toast.warning(
+            `Danh mục "${cat.name}" tháng ${month}/${year} chưa có định mức. Vui lòng đặt định mức!`
+          );
+        }
+      } catch (err) {
+        console.error("Không thể kiểm tra định mức", err);
+      }
 
       setForm({ amount: "", description: "", date: "", categoryId: "" });
       toast.success("Thêm khoản chi thành công");
